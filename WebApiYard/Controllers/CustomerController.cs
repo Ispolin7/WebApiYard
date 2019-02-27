@@ -15,10 +15,25 @@ namespace WebApiYard.Controllers
         private readonly ICustomerService customerService;
         private readonly IMapper mapper;
 
+        /// <summary>
+        /// CustomerController constructor
+        /// </summary>
+        /// <param name="mapper"></param>
         public CustomerController(IMapper mapper)
         {
             this.customerService = new CustomerService();
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        /// <summary>
+        /// Constructor for tests
+        /// </summary>
+        /// <param name="mapper"></param>
+        /// <param name="service"></param>
+        public CustomerController(/*IMapper mapper, */ICustomerService service)
+        {
+            this.customerService = service;
+            //this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
 

@@ -6,7 +6,7 @@ namespace WebApiYard.Repositories
 {
     public class Repository<T> : IRepository<T> where T : IEntity<Guid>
     {
-        private static Dictionary<Guid, T> _users = new Dictionary<Guid, T>();
+        public static Dictionary<Guid, T> _entities = new Dictionary<Guid, T>();
 
         /// <summary>
         /// 
@@ -14,7 +14,7 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public IEnumerable<T> All()
         {
-            return _users.Values.ToList();
+            return _entities.Values.ToList();
         }
 
         /// <summary>
@@ -24,9 +24,9 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public T GetById(Guid id)
         {
-            if (_users.ContainsKey(id))
+            if (_entities.ContainsKey(id))
             {
-                return _users[id];
+                return _entities[id];
             }
             return default(T);
         }
@@ -38,7 +38,7 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public Guid Insert(T entity)
         {
-            _users.Add(entity.Id, entity);
+            _entities.Add(entity.Id, entity);
             return entity.Id;
         }
 
@@ -49,9 +49,9 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public bool Delete(Guid id)
         {
-            if (_users.ContainsKey(id))
+            if (_entities.ContainsKey(id))
             {
-                _users.Remove(id);
+                _entities.Remove(id);
                 return true;
             }
             return false;
@@ -65,9 +65,9 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public bool Update(T entity)
         {
-            if (_users.ContainsKey(entity.Id))
+            if (_entities.ContainsKey(entity.Id))
             {
-                _users[entity.Id] = entity;
+                _entities[entity.Id] = entity;
                 return true;
             }
             return false;

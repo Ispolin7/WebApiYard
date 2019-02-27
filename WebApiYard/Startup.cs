@@ -45,18 +45,15 @@ namespace WebApiYard
                 app.UseHsts();
             }
 
-            //app.UseExceptionHandler("/errors/500");
-            //app.UseStatusCodePagesWithReExecute("/errors/{0}");
-            //app.UseGlobalExceptionHandler(x => {
-            //    x.ContentType = "application/json";
-            //    x.ResponseBody(s => JsonConvert.SerializeObject(new
-            //    {
-            //        Message = "An error occurred whilst processing your request"
-            //    }));
-            //});
+            app.UseGlobalExceptionHandler(x => {
+                x.ContentType = "application/json";           
+                x.Map<Exception>().ToStatusCode(StatusCodes.Status404NotFound)
+                    .WithBody((ex, context) => JsonConvert.SerializeObject(new
+                    {
+                        Error = ex.Message
+                    }));
+            });
 
-            app.Map("/error", x => x.Run(y => throw new Exception()));
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

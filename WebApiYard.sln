@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiYard", "WebApiYard\WebApiYard.csproj", "{4029641B-2836-414B-8A28-39A62DE76FCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiYard", "WebApiYard\WebApiYard.csproj", "{4029641B-2836-414B-8A28-39A62DE76FCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiYardTests", "WebApiYardTests\WebApiYardTests.csproj", "{E1E07800-5DF5-4793-86E0-5388D815F1AF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4029641B-2836-414B-8A28-39A62DE76FCB} = {4029641B-2836-414B-8A28-39A62DE76FCB}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{4029641B-2836-414B-8A28-39A62DE76FCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4029641B-2836-414B-8A28-39A62DE76FCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4029641B-2836-414B-8A28-39A62DE76FCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1E07800-5DF5-4793-86E0-5388D815F1AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1E07800-5DF5-4793-86E0-5388D815F1AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1E07800-5DF5-4793-86E0-5388D815F1AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1E07800-5DF5-4793-86E0-5388D815F1AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

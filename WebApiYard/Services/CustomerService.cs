@@ -16,7 +16,13 @@ namespace WebApiYard.Services
         /// </summary>
         public CustomerService()
         {
-            customerRepository = new Repository<Repositories.Models.Customer>();
+            this.customerRepository = new Repository<Repositories.Models.Customer>();
+        }
+
+        // TODO - delete. Test constructor
+        public CustomerService(Repository<Repositories.Models.Customer> repository)
+        {
+            this.customerRepository = repository;
         }
 
         /// <summary>
@@ -121,7 +127,7 @@ namespace WebApiYard.Services
             var customer = customerRepository.GetById(id);
             if (customer == null || customer.IsDelete == true)
             {
-                throw new ArgumentException("exception");
+                throw new ArgumentException("Entity not found");
             }
             return customer;
         }
