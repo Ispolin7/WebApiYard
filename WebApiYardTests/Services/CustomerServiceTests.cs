@@ -23,13 +23,13 @@ namespace UnitTests.Services
             var customerStub = new CustomerRepositoryStub();            
             this.TestRepositoryCustomer = customerStub.Customers;           
             this.TestCustomer = customerStub.TestCustomer;
-            Service = new CustomerService(TestRepositoryCustomer);
+            Service = new CustomerService();
         }
 
         [TestMethod]
         public void GetAllCustomers_ExpectedCount3()
         {
-            var customers = Service.GetAllCustomers();
+            var customers = Service.All();
 
             var count = customers.Count();
 
@@ -46,7 +46,7 @@ namespace UnitTests.Services
                 Age = 20
             };
 
-            Service.SaveCustomer(newServiceCustomer);
+            Service.Save(newServiceCustomer);
             var customersCount = Repository<Customer>._entities.Count;
 
             Assert.IsTrue(customersCount == 4, $"Emount of elements - {customersCount}, expected - 4");
@@ -55,7 +55,7 @@ namespace UnitTests.Services
         [TestMethod]
         public void GetCustomer_ExpectedNameGaper()
         {
-            var customer = Service.GetCustomer(TestCustomer.Id);
+            var customer = Service.Get(TestCustomer.Id);
 
             var customerName = customer.LastName;
 
@@ -73,7 +73,7 @@ namespace UnitTests.Services
                 Age = TestCustomer.Age
             };
             
-            var result = Service.UpdateCustomer(serviceCustomer);
+            var result = Service.Update(serviceCustomer);
 
             Assert.IsTrue(result);
         }
@@ -81,9 +81,9 @@ namespace UnitTests.Services
         [TestMethod]
         public void Remove_Expected2Customers()
         {
-            Service.RemoveCustomer(TestCustomer.Id);
+            Service.Remove(TestCustomer.Id);
 
-            var customerCount = Service.GetAllCustomers().Count();
+            var customerCount = Service.All().Count();
 
             Assert.IsTrue(customerCount == 2, $"Emount of elements - {customerCount}, expected - 2");
         }

@@ -8,12 +8,12 @@ namespace WebApiYardTests.Stubs.Services
 {
     class CustomerServiceStub : ICustomerService
     {
-        public IEnumerable<Customer> GetAllCustomers()
+        public IEnumerable<Customer> All()
         {
             return new List<Customer> { default(Customer), default(Customer) };
         }
 
-        public Customer GetCustomer(Guid id)
+        public Customer Get(Guid id)
         {
             return new WebApiYard.Services.Models.Customer
             {
@@ -25,17 +25,22 @@ namespace WebApiYardTests.Stubs.Services
             };
         }
 
-        public bool RemoveCustomer(Guid id)
+        public WebApiYard.Repositories.Models.Customer GetInclude(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(Guid id)
         {
             return true;
         }
 
-        public Guid SaveCustomer(Customer customer)
+        public Guid Save(Customer customer)
         {
             return Guid.NewGuid();
         }
 
-        public bool UpdateCustomer(Customer customer)
+        public bool Update(Customer customer)
         {
             return true;
         }

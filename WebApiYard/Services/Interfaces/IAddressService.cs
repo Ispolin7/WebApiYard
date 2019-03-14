@@ -6,8 +6,7 @@ using WebApiYard.Services.Models;
 
 namespace WebApiYard.Services.Interfaces
 {
-    public interface ICustomerService : IEntityService<Customer>
+    interface IAddressService : IEntityService<Address>
     {
-        Repositories.Models.Customer GetInclude(Guid id);
     }
 }

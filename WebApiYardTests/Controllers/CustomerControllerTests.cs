@@ -14,11 +14,11 @@ namespace WebApiYardTests.Controllers
     {
         private CustomerController Controller {get; set;}
 
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            this.Controller = new CustomerController(new CustomerServiceStub());
-        }
+        //[TestInitialize]
+        //public void TestInitialize()
+        //{
+        //    this.Controller = new CustomerController(new CustomerServiceStub());
+        //}
 
         
         [TestMethod]

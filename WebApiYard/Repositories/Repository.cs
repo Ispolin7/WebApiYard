@@ -1,12 +1,24 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using WebApiYard.DAL;
 
 namespace WebApiYard.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : IEntity<Guid>
+    public class Repository<T> : IRepository<T> where T : class, IEntity<Guid>
     {
         public static Dictionary<Guid, T> _entities = new Dictionary<Guid, T>();
+
+        protected readonly DbContext dbContext;
+        protected readonly DbSet<T> dbSet;
+
+        public Repository()
+        {
+            dbContext = new ApiContext();
+            dbSet = dbContext.Set<T>();
+        }
 
         /// <summary>
         /// 
@@ -14,7 +26,10 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public IEnumerable<T> All()
         {
-            return _entities.Values.ToList();
+            return dbSet
+                .AsNoTracking()
+                .Where(e => e.IsDelete != true)
+                .ToList();
         }
 
         /// <summary>
@@ -24,11 +39,11 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public T GetById(Guid id)
         {
-            if (_entities.ContainsKey(id))
-            {
-                return _entities[id];
-            }
-            return default(T);
+            return dbSet
+                .AsNoTracking()
+                .Where(e => e.Id == id)
+                .Where(e => e.IsDelete != true)
+                .FirstOrDefault();
         }
 
         /// <summary>
@@ -38,7 +53,8 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public Guid Insert(T entity)
         {
-            _entities.Add(entity.Id, entity);
+            dbSet.Add(entity);
+            dbContext.SaveChanges();
             return entity.Id;
         }
 
@@ -49,12 +65,9 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public bool Delete(Guid id)
         {
-            if (_entities.ContainsKey(id))
-            {
-                _entities.Remove(id);
-                return true;
-            }
-            return false;
+            dbSet.Remove(dbSet.FirstOrDefault(e => e.Id == id));
+            dbContext.SaveChanges();
+            return true;
         }
 
         /// <summary>
@@ -65,12 +78,32 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public bool Update(T entity)
         {
-            if (_entities.ContainsKey(entity.Id))
-            {
-                _entities[entity.Id] = entity;
-                return true;
-            }
-            return false;
+            dbSet.Update(entity);
+            dbContext.SaveChanges();
+            return true;
+        }
+
+
+
+
+        public IEnumerable<T> AllIncluding(params Expression<Func<T, object>>[] includeProperties)
+        {
+            return Include(includeProperties).AsNoTracking();
+        }
+
+        public IEnumerable<T> AllIncluding(
+            Func<T, bool> predicate,
+            params Expression<Func<T, object>>[] includeProperties)
+        {
+            var query = Include(includeProperties).AsNoTracking();
+            return query.Where(predicate);
+        }
+
+        private IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = dbSet.AsNoTracking();
+            return includeProperties
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
     }
 }

@@ -9,6 +9,7 @@ using WebApiYard.Services.Interfaces;
 namespace WebApiYard.Controllers
 {
     [Route("api/customers")]
+    [Produces("application/json")]
     [ApiController]
     public class CustomerController : ControllerBase
     {
@@ -25,16 +26,16 @@ namespace WebApiYard.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        /// <summary>
-        /// Constructor for tests
-        /// </summary>
-        /// <param name="mapper"></param>
-        /// <param name="service"></param>
-        public CustomerController(/*IMapper mapper, */ICustomerService service)
-        {
-            this.customerService = service;
-            //this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        }
+        ///// <summary>
+        ///// Constructor for tests
+        ///// </summary>
+        ///// <param name="mapper"></param>
+        ///// <param name="service"></param>
+        //public CustomerController(/*IMapper mapper, */ICustomerService service)
+        //{
+        //    this.customerService = service;
+        //    //this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        //}
 
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace WebApiYard.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<ViewModels.Customer>> GetAll()
         {
-            var customers = this.customerService.GetAllCustomers();
+            var customers = this.customerService.All();
             var mapped = this.mapper.Map<IEnumerable<ViewModels.Customer>>(customers);
             return mapped.ToList();
         }
@@ -62,7 +63,7 @@ namespace WebApiYard.Controllers
                 return this.NotFound();
             }
 
-            var customer = this.customerService.GetCustomer(id);
+            var customer = this.customerService.Get(id);
             return this.mapper.Map<ViewModels.Customer>(customer);
         }
 
@@ -80,7 +81,7 @@ namespace WebApiYard.Controllers
             }
 
             var customerServiceModel = this.mapper.Map<Services.Models.Customer>(customer);
-            var id = this.customerService.SaveCustomer(customerServiceModel);
+            var id = this.customerService.Save(customerServiceModel);
             return this.Created("", new { Id = id});
         }
 
@@ -100,7 +101,7 @@ namespace WebApiYard.Controllers
             customer.Id = id;
             var customerServiceModel = this.mapper.Map<Services.Models.Customer>(customer);
 
-            if (customerService.UpdateCustomer(customerServiceModel))
+            if (customerService.Update(customerServiceModel))
             {
                 return this.Ok(new { success = true});
             }
@@ -116,11 +117,24 @@ namespace WebApiYard.Controllers
         [HttpDelete("{id:Guid}")]
         public ActionResult Delete(Guid id)
         {
-            if (!customerService.RemoveCustomer(id))
+            if (!customerService.Remove(id))
             {
                 return this.BadRequest();
             }
             return this.NoContent();
+        }
+
+       // TODO test after realization method in service
+        [HttpGet("{id:Guid}/include")]
+        public ActionResult<Repositories.Models.Customer> Include(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                return this.NotFound();
+            }
+
+           // var customer = this.customerService.GetInclude(id);
+            return this.customerService.GetInclude(id);
         }
     }
 }
