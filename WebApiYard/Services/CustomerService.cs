@@ -139,7 +139,7 @@ namespace WebApiYard.Services
         {
             var customer = customerRepository
                 .AllIncluding(
-                    c => c.Id == id,
+                    //c => c.Id == id,
                     // o => o.IsDelete != true,
                     //"Orders"
                     c => c.Orders.Select(o => o.ShippingAddress)
