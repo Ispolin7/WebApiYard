@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,7 +85,11 @@ namespace WebApiYard.Repositories
         }
 
 
-
+        public virtual IQueryable<T> GetAllLazyLoad(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] children)
+        {
+            children.ToList().ForEach(x => this.dbSet.Include(x).Load());
+            return dbSet;
+        }
 
         public IEnumerable<T> AllIncluding(params Expression<Func<T, object>>[] includeProperties)
         {
@@ -104,6 +109,34 @@ namespace WebApiYard.Repositories
             IQueryable<T> query = dbSet.AsNoTracking();
             return includeProperties
                 .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+        }
+
+        //public IEnumerable<T> AllIncluding(
+        //    Func<T, bool> predicate,
+        //    Func<T, object> include,
+        //    params Expression<Func<T, object>>[] thenInclude)
+        //{
+        //    var query = ThenInclude(include);
+        //    return query.Where(predicate);
+        //}
+
+        //private IQueryable<T> ThenInclude(Func<T, object> include, params Expression<Func<T, object>>[] thenInclude)
+        //{
+        //    IQueryable<T> query = dbSet.AsNoTracking();
+        //    return thenInclude
+        //        .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+        //}
+
+        public IQueryable<T> Get(Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null)
+        {
+            IQueryable<T> queryable = dbSet;
+
+            if (includes != null)
+            {
+                queryable = includes(queryable);
+            }
+
+            return queryable;
         }
     }
 }

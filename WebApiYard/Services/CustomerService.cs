@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using WebApiYard.Repositories;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApiYard.Services
 {
@@ -137,17 +138,24 @@ namespace WebApiYard.Services
         public Repositories.Models.Customer GetInclude(Guid id)
         {
             var customer = customerRepository
-                // .AllThenIncluding
                 .AllIncluding(
-                    o => o.IsDelete != true,
+                    c => c.Id == id,
+                    // o => o.IsDelete != true,
                     //"Orders"
-                    c => c.Orders
+                    c => c.Orders.Select(o => o.ShippingAddress)
                     //c => c.Orders
 
-                    )
-                    .Where(c => c.Id == id)
-                    .FirstOrDefault();
-            return customer;
+                    );
+            return customer.First();
+            //return new Repositories.Models.Customer();
+            //var customer = this.customerRepository.Get(param => param
+            //.Include(c => c.Orders)
+            //    .ThenInclude(o => o.ShippingAddress)
+            //.Include(c => c.Orders)
+            //    .ThenInclude(o => o.Items)
+            //.ThenInclude(i => i.Product))
+            //.First();
+            //return customer;
         }
     }
 }

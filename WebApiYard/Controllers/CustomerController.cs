@@ -124,7 +124,7 @@ namespace WebApiYard.Controllers
             return this.NoContent();
         }
 
-       // TODO test after realization method in service
+  
         [HttpGet("{id:Guid}/include")]
         public ActionResult<Repositories.Models.Customer> Include(Guid id)
         {
@@ -133,8 +133,8 @@ namespace WebApiYard.Controllers
                 return this.NotFound();
             }
 
-           // var customer = this.customerService.GetInclude(id);
-            return this.customerService.GetInclude(id);
+            var customer = this.customerService.GetInclude(id);
+            return customer;
         }
     }
 }

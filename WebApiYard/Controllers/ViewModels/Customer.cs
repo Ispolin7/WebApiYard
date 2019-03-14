@@ -19,6 +19,6 @@ namespace WebApiYard.Controllers.ViewModels
         [Range(16,100)]
         public int Age { get; set; }
 
-        public IEnumerable<string> Orders { get; set; }
+        public IEnumerable<Repositories.Models.Order> Orders { get; set; }
     }
 }

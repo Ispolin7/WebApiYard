@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -18,5 +19,7 @@ namespace WebApiYard.Repositories
         //     params Expression<Func<T, object>>[] includeProperties);
         IEnumerable<T> AllIncluding(params Expression<Func<T, object>>[] includeProperties);
         IEnumerable<T> AllIncluding(Func<T, bool> predicate, params Expression<Func<T, object>>[] includeProperties);
+        IQueryable<T> GetAllLazyLoad(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] children);
+        IQueryable<T> Get(Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null);
     }
 }

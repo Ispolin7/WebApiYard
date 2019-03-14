@@ -14,11 +14,11 @@ namespace WebApiYard.Repositories.Models
         public Address ShippingAddress { get; set; }
 
         public Guid CustomerId { get; set; }
-        public Customer Cusromer { get; set; }
+        //public Customer Cusromer { get; set; }
 
         public DateTime OrderDate { get; set; }
 
-        //public IEnumerable<OrderItem> Items { get; set; }
+        public IEnumerable<OrderItem> Items { get; set; }
 
         [DefaultValue(false)]
         public bool IsDelete { get; set; }

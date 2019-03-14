@@ -6,12 +6,6 @@ namespace WebApiYard.Controllers.ValidationModels.CustomDataAnnotations
 {
     public class ColorCheckAttribute : ValidationAttribute
     {    
-        
-        //public override bool IsValid(object value)
-        //{
-        //    return value != null;
-        //}
-
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
            
