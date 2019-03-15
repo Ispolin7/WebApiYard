@@ -1,0 +1,7 @@
+.vs
+/WebApiYard/bin
+/WebApiYard/obj
+/WebApiYard/Migrations
+/WebApiYardTests/bin
+/WebApiYardTests/obj
+

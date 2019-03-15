@@ -6,7 +6,6 @@ namespace WebApiYard.Repositories.Models
 {
     public class Product : IEntity<Guid>
     {
-        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
         public string Name { get; set; }
@@ -15,12 +14,10 @@ namespace WebApiYard.Repositories.Models
 
         public double Price { get; set; }
 
-        [DefaultValue(false)]
         public bool IsDelete { get; set; }
 
         public DateTime CreatedAT { get; set; }
 
-        [DefaultValue(false)]
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

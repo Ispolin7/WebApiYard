@@ -8,7 +8,6 @@ using WebApiYard.Repositories.Models;
 
 namespace WebApiYard.Controllers.ValidationModels.CustomDataAnnotations
 {
-
     public class CustomerExistsAttribute : ValidationAttribute
     { 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)

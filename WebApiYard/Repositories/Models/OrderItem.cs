@@ -7,8 +7,6 @@ namespace WebApiYard.Repositories.Models
 {
     public class OrderItem : IEntity<Guid>
     {
-        // TODO Навести порядок с навигационными свойствами
-        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
         public int Quantity { get; set; }
@@ -17,19 +15,16 @@ namespace WebApiYard.Repositories.Models
 
         public int Color { get; set; }
 
-        public Guid OrderId { get; set; }
-        public Order Order { get; set; }
+        public Guid OrderId { get; set; } 
 
         public Guid ProductId { get; set; }
-        //public Product Product { get; set; } срабатывает рекурсивно
+        public Product Product { get; set; } 
 
-        [DefaultValue(false)]
         public bool IsDelete { get; set; }
 
         public DateTime CreatedAT { get; set; }
 
-        [DefaultValue(false)]
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 
 }

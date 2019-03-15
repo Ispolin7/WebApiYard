@@ -79,6 +79,7 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public bool Update(T entity)
         {
+            entity.UpdatedAt = DateTime.Now;
             dbSet.Update(entity);
             dbContext.SaveChanges();
             return true;

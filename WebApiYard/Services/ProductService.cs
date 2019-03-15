@@ -62,11 +62,9 @@ namespace WebApiYard.Services
         {
             var repositoryProduct = new Repositories.Models.Product
             {
-                Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                CreatedAT = DateTime.UtcNow
             };
             return this.productRepository.Insert(repositoryProduct);
         }
@@ -79,16 +77,10 @@ namespace WebApiYard.Services
         public bool Update(Product product)
         {
             var oldProduct = this.GetProductFromDB(product.Id);
-            var newProduct = new Repositories.Models.Product
-            {
-                Id = oldProduct.Id,
-                Name = oldProduct.Name,
-                Description = product.Description,
-                Price = product.Price,
-                CreatedAT = oldProduct.CreatedAT,
-                UpdatedAt = DateTime.UtcNow,
-            };
-            return this.productRepository.Update(newProduct);
+            oldProduct.Name = product.Name;
+            oldProduct.Description = product.Description;
+            oldProduct.Price = product.Price;
+            return this.productRepository.Update(oldProduct);
         }
 
         /// <summary>
