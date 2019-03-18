@@ -64,7 +64,7 @@ namespace WebApiYard.Services
             {
                 Name = product.Name,
                 Description = product.Description,
-                Price = product.Price,
+                Price = product.Price
             };
             return this.productRepository.Insert(repositoryProduct);
         }
@@ -92,6 +92,7 @@ namespace WebApiYard.Services
         {
             var product = this.GetProductFromDB(id);
             product.IsDelete = true;
+            product.UpdatedAt = DateTime.Now;
             return this.productRepository.Update(product);
         }
 
@@ -105,7 +106,7 @@ namespace WebApiYard.Services
             var product = productRepository.GetById(id);
             if (product == null || product.IsDelete == true)
             {
-                throw new ArgumentException("Entity not found");
+                throw new ArgumentException("Product not found");
             }
             return product;
         }

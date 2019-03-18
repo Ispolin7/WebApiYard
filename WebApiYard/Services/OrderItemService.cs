@@ -56,9 +56,10 @@ namespace WebApiYard.Services
                 Quantity = orderItem.Quantity,
                 PurchasePrice = orderItem.PurchasePrice,
                 Color = Enum.GetName(typeof(Colors), orderItem.Color),
+                // TODO add Order and Product models
                 OrderId = orderItem.OrderId,
                 ProductId = orderItem.ProductId
-                // TODO add Order and Product models
+                
             };
         }
 
@@ -78,8 +79,7 @@ namespace WebApiYard.Services
                 PurchasePrice = orderItem.Quantity * product.Price,
                 Color = (int)(Colors)Enum.Parse(typeof(Colors), orderItem.Color),
                 OrderId = orderItem.OrderId,
-                ProductId = orderItem.ProductId,
-                CreatedAT = DateTime.UtcNow
+                ProductId = orderItem.ProductId
             };
             return this.orderItemRepository.Insert(repositoryOrderItem);
         }
@@ -94,18 +94,14 @@ namespace WebApiYard.Services
             var product = productRepository.GetById(orderItem.ProductId);
             var oldOrderItem = this.GetOrderItemFromDB(orderItem.Id);
 
-            var newOrderItem = new Repositories.Models.OrderItem
-            {
-                Id = oldOrderItem.Id,
-                Quantity = orderItem.Quantity,
-                PurchasePrice = orderItem.Quantity * product.Price,
-                Color = (int)(Colors)Enum.Parse(typeof(Colors), orderItem.Color),
-                OrderId = orderItem.OrderId,
-                ProductId = orderItem.ProductId,
-                CreatedAT = oldOrderItem.CreatedAT,
-                UpdatedAt = DateTime.UtcNow,
-            };
-            return this.orderItemRepository.Update(newOrderItem);
+            oldOrderItem.Quantity = orderItem.Quantity;
+            oldOrderItem.PurchasePrice = orderItem.Quantity * product.Price;
+            oldOrderItem.Color = (int)(Colors)Enum.Parse(typeof(Colors), orderItem.Color);
+            oldOrderItem.OrderId = orderItem.OrderId;
+            oldOrderItem.ProductId = orderItem.ProductId;
+            oldOrderItem.UpdatedAt = DateTime.UtcNow;
+
+            return this.orderItemRepository.Update(oldOrderItem);
         }
 
         /// <summary>
@@ -115,9 +111,10 @@ namespace WebApiYard.Services
         /// <returns>result status</returns>
         public bool Remove(Guid id)
         {
-            var OrderItem = this.GetOrderItemFromDB(id);
-            OrderItem.IsDelete = true;
-            return this.orderItemRepository.Update(OrderItem);
+            var orderItem = this.GetOrderItemFromDB(id);
+            orderItem.IsDelete = true;
+            orderItem.UpdatedAt = DateTime.Now;
+            return this.orderItemRepository.Update(orderItem);
         }
 
         /// <summary>
@@ -127,12 +124,12 @@ namespace WebApiYard.Services
         /// <returns>OrderItem model or throw an exception</returns>
         public Repositories.Models.OrderItem GetOrderItemFromDB(Guid id)
         {
-            var OrderItem = orderItemRepository.GetById(id);
-            if (OrderItem == null || OrderItem.IsDelete == true)
+            var orderItem = orderItemRepository.GetById(id);
+            if (orderItem == null || orderItem.IsDelete == true)
             {
-                throw new ArgumentException("Entity not found");
+                throw new ArgumentException("Order Item not found");
             }
-            return OrderItem;
+            return orderItem;
         }
     }
 }

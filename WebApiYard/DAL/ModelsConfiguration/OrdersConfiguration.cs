@@ -12,7 +12,6 @@ namespace WebApiYard.Repositories.Models.ModelsConfiguration
             builder.Ignore(o => o.Items);
             builder.HasOne<Customer>().WithMany().HasForeignKey(o => o.CustomerId);
             builder.Property(o => o.IsDelete).HasDefaultValue(false);
-            builder.Property(o => o.OrderDate).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
             builder.Property(o => o.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
         }
     }

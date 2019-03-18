@@ -70,9 +70,7 @@ namespace WebApiYard.Services
             {
                 Id = order.Id,
                 AddressId = order.AddressId,
-                CustomerId = order.CustomerId,
-                OrderDate = DateTime.UtcNow,
-                CreatedAT = DateTime.UtcNow               
+                CustomerId = order.CustomerId              
             };
             return this.orderRepository.Insert(repositoryOrder);
         }
@@ -84,17 +82,11 @@ namespace WebApiYard.Services
         /// <returns>result status</returns>
         public bool Update(Order order)
         {
-            var oldOrder = this.GetOrderFromDB(order.Id);
-            var newOrder = new Repositories.Models.Order
-            {
-                Id = oldOrder.Id,
-                AddressId = oldOrder.AddressId,
-                CustomerId = oldOrder.CustomerId,
-                OrderDate = oldOrder.OrderDate,
-                CreatedAT = oldOrder.CreatedAT,
-                UpdatedAt = DateTime.UtcNow,
-            };
-            return this.orderRepository.Update(newOrder);
+            var oldOrder = this.GetOrderFromDB(order.Id);           
+            oldOrder.AddressId = order.AddressId;
+            oldOrder.CustomerId = order.CustomerId;
+            oldOrder.UpdatedAt = DateTime.UtcNow;
+            return this.orderRepository.Update(oldOrder);
         }
 
         /// <summary>
@@ -106,6 +98,7 @@ namespace WebApiYard.Services
         {
             var order = this.GetOrderFromDB(id);
             order.IsDelete = true;
+            order.UpdatedAt = DateTime.Now;
             return this.orderRepository.Update(order);
         }
 
@@ -119,7 +112,7 @@ namespace WebApiYard.Services
             var order = orderRepository.GetById(id);
             if (order == null || order.IsDelete == true)
             {
-                throw new ArgumentException("Entity not found");
+                throw new ArgumentException("Order not found");
             }
             return order;
         }

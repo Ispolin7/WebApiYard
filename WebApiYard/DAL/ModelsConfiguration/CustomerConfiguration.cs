@@ -7,10 +7,10 @@ namespace WebApiYard.Repositories.Models.ModelsConfiguration
     {
         public void Configure(EntityTypeBuilder<Customer> builder)
         {
-            builder.ToTable("Customers");
-            builder.Property(a => a.IsDelete).HasDefaultValue(false);
-            builder.Ignore(o => o.Orders);
-            builder.Property(o => o.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+            builder.ToTable("Customers");         
+            builder.Ignore(c => c.Orders);
+            builder.Property(c => c.IsDelete).HasDefaultValue(false);
+            builder.Property(c => c.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
         }
     }
 }

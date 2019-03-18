@@ -11,7 +11,6 @@ namespace WebApiYard.Services
     public class CustomerService : ICustomerService
     {
         private readonly IRepository<Repositories.Models.Customer> customerRepository;
-        //private readonly IRepository<Repositories.Models.Order> orderRepository;
 
         /// <summary>
         /// Initialization of all repositories
@@ -19,7 +18,6 @@ namespace WebApiYard.Services
         public CustomerService()
         {
             this.customerRepository = new Repository<Repositories.Models.Customer>();
-            //this.orderRepository = new Repository<Repositories.Models.Order>();
         }
 
         //public CustomerService(Repository<Repositories.Models.Customer> repository)
@@ -78,10 +76,7 @@ namespace WebApiYard.Services
                 //Id = Guid.NewGuid(),
                 FirstName = customer.FirstName,
                 LastName = customer.LastName,
-                Age = customer.Age,
-                CreatedAT = DateTime.UtcNow,
-                UpdatedAt = DateTime.MinValue,
-                //IsDelete = false
+                Age = customer.Age               
             };
             return customerRepository.Insert(repositoryCustomer);
         }
@@ -93,18 +88,12 @@ namespace WebApiYard.Services
         /// <returns>result status</returns>
         public bool Update(Customer customer)
         {
-            var oldCustomer = this.GetCustomerFromDB(customer.Id);
-            var newCustomer = new Repositories.Models.Customer
-            {
-                Id = oldCustomer.Id,
-                FirstName = customer.FirstName,
-                LastName = customer.LastName,
-                Age = customer.Age,
-                //CreatedAT = oldCustomer.CreatedAT,
-                UpdatedAt = DateTime.UtcNow,
-                //IsDelete = false
-            };
-            return customerRepository.Update(newCustomer);
+            var oldCustomer = this.GetCustomerFromDB(customer.Id);           
+            oldCustomer.FirstName = customer.FirstName;
+            oldCustomer.LastName = customer.LastName;
+            oldCustomer.Age = customer.Age;
+            oldCustomer.UpdatedAt = DateTime.Now;
+            return customerRepository.Update(oldCustomer);
         }
 
         /// <summary>
@@ -116,6 +105,7 @@ namespace WebApiYard.Services
         {
             var customer = this.GetCustomerFromDB(id);
             customer.IsDelete = true;
+            customer.UpdatedAt = DateTime.Now;
             return customerRepository.Update(customer);
         }
 
@@ -129,7 +119,7 @@ namespace WebApiYard.Services
             var customer = customerRepository.GetById(id);
             if (customer == null || customer.IsDelete == true)
             {
-                throw new ArgumentException("Entity not found");
+                throw new ArgumentException("Customer not found");
             }
             return customer;
         }
