@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using WebApiYard.Common;
 using WebApiYard.Controllers.ValidationModels.CustomDataAnnotations;
 
 namespace WebApiYard.Controllers.ValidationModels
@@ -16,12 +12,12 @@ namespace WebApiYard.Controllers.ValidationModels
         [ColorCheck]
         public string Color { get; set; }
 
-        // TODO validation in DB
         [Required]
+        [OrderExistsDB]
         public Guid OrderId { get; set; }
 
-        // TODO validation in DB
         [Required]
+        [ProductExistsDB]
         public Guid ProductId { get; set; }
     }
 }

@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using WebApiYard.Repositories;
 using WebApiYard.Repositories.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApiYard.Controllers.ValidationModels.CustomDataAnnotations
 {
-    public class CustomerExistsAttribute : ValidationAttribute
-    { 
+    public class ProductExistsDBAttribute : ValidationAttribute
+    {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var repository = new Repository<Customer>();
+            var repository = new Repository<Product>();
             if (repository.GetById((Guid)value) == null)
             {
-                return new ValidationResult("Customer not found");
+                return new ValidationResult("Product not found");
             }
             return ValidationResult.Success;
         }

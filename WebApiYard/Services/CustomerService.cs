@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using WebApiYard.Repositories;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApiYard.Services
 {
@@ -51,7 +50,6 @@ namespace WebApiYard.Services
         /// <returns>Customer or throw an exception</returns>
         public Customer Get(Guid id)
         {
-
             var customer = this.GetCustomerFromDB(id);
             return new Customer
             {
@@ -73,7 +71,6 @@ namespace WebApiYard.Services
         {
             var repositoryCustomer = new Repositories.Models.Customer
             {
-                //Id = Guid.NewGuid(),
                 FirstName = customer.FirstName,
                 LastName = customer.LastName,
                 Age = customer.Age               
