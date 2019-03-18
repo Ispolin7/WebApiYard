@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace WebApiYard.Repositories
 {
@@ -14,12 +12,6 @@ namespace WebApiYard.Repositories
         Guid Insert(T entity);
         bool Delete(Guid id);
         bool Update(T entity);
-        //IQueryable<T> Include(params Expression<Func<T, object>>[] includedProperties);
-        //IEnumerable<T> GetWithInclude(Func<T, bool> predicate,
-        //     params Expression<Func<T, object>>[] includeProperties);
-        IEnumerable<T> AllIncluding(params Expression<Func<T, object>>[] includeProperties);
-        IEnumerable<T> AllIncluding(Func<T, bool> predicate, params Expression<Func<T, object>>[] includeProperties);
-        IQueryable<T> GetAllLazyLoad(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] children);
-        IQueryable<T> Get(Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null);
+        IQueryable<T> AllIncluding(params Expression<Func<T, object>>[] includeProperties);
     }
 }

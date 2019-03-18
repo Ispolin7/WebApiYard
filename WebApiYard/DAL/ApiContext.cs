@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using WebApiYard.Repositories.Models;
 using WebApiYard.Repositories.Models.ModelsConfiguration;
 
@@ -35,6 +36,9 @@ namespace WebApiYard.DAL
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
+
+            // add in db test values
+            modelBuilder.Seed();           
         }
 
         /// <summary>

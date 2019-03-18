@@ -85,32 +85,41 @@ namespace WebApiYard.Repositories
             return true;
         }
 
-
-        public virtual IQueryable<T> GetAllLazyLoad(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] children)
-        {
-            children.ToList().ForEach(x => this.dbSet.Include(x).Load());
-            return dbSet;
-        }
-
-        public IEnumerable<T> AllIncluding(params Expression<Func<T, object>>[] includeProperties)
+        /// <summary>
+        /// Include all necessary entities.
+        /// </summary>
+        /// <param name="includeProperties"></param>
+        /// <returns>Request include part</returns>
+        public IQueryable<T> AllIncluding(params Expression<Func<T, object>>[] includeProperties)
         {
             return Include(includeProperties).AsNoTracking();
         }
 
-        public IEnumerable<T> AllIncluding(
-            Func<T, bool> predicate,
-            params Expression<Func<T, object>>[] includeProperties)
-        {
-            var query = Include(includeProperties).AsNoTracking();
-            return query.Where(predicate);
-        }
-
+        /// <summary>
+        /// Form a request.
+        /// </summary>
+        /// <param name="includeProperties"></param>
+        /// <returns>request tree</returns>
         private IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties)
         {
             IQueryable<T> query = dbSet.AsNoTracking();
             return includeProperties
                 .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
+
+        //public IQueryable<T> AllIncluding(
+        //    Func<T, bool> predicate,
+        //    params Expression<Func<T, object>>[] includeProperties)
+        //{
+        //    var query = Include(includeProperties).AsNoTracking();
+        //    return query.Where(predicate);
+        //}       
+
+        //public virtual IQueryable<T> GetAllLazyLoad(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] children)
+        //{
+        //    children.ToList().ForEach(x => this.dbSet.Include(x).Load());
+        //    return dbSet;
+        //}
 
         //public IEnumerable<T> AllIncluding(
         //    Func<T, bool> predicate,
@@ -128,16 +137,16 @@ namespace WebApiYard.Repositories
         //        .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         //}
 
-        public IQueryable<T> Get(Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null)
-        {
-            IQueryable<T> queryable = dbSet;
+        //public IQueryable<T> Get(Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null)
+        //{
+        //    IQueryable<T> queryable = dbSet;
 
-            if (includes != null)
-            {
-                queryable = includes(queryable);
-            }
+        //    if (includes != null)
+        //    {
+        //        queryable = includes(queryable);
+        //    }
 
-            return queryable;
-        }
+        //    return queryable;
+        //}        
     }
 }

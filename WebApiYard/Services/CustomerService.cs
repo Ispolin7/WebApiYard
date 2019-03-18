@@ -129,20 +129,11 @@ namespace WebApiYard.Services
                     //c => c.Id == id,
                     // o => o.IsDelete != true,
                     //"Orders"
-                    c => c.Orders.Select(o => o.ShippingAddress)
+                    //c => c.Orders.Select(o => o.ShippingAddress)
                     //c => c.Orders
 
                     );
             return customer.First();
-            //return new Repositories.Models.Customer();
-            //var customer = this.customerRepository.Get(param => param
-            //.Include(c => c.Orders)
-            //    .ThenInclude(o => o.ShippingAddress)
-            //.Include(c => c.Orders)
-            //    .ThenInclude(o => o.Items)
-            //.ThenInclude(i => i.Product))
-            //.First();
-            //return customer;
         }
     }
 }
