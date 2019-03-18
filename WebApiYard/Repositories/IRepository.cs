@@ -13,5 +13,6 @@ namespace WebApiYard.Repositories
         bool Delete(Guid id);
         bool Update(T entity);
         IQueryable<T> AllIncluding(params Expression<Func<T, object>>[] includeProperties);
+        IEnumerable<T> AllIncluding(Func<T, bool> predicate, params Expression<Func<T, object>>[] includeProperties);
     }
 }

@@ -37,9 +37,7 @@ namespace WebApiYard.Services
                 Id = x.Id,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
-                Age = x.Age,
-                // TODO implement logic for orders
-                //Orders = new List<string>()
+                Age = x.Age,             
             });
         }
 
@@ -50,15 +48,15 @@ namespace WebApiYard.Services
         /// <returns>Customer or throw an exception</returns>
         public Customer Get(Guid id)
         {
-            var customer = this.GetCustomerFromDB(id);
+            // TODO Exception
+            var customer = customerRepository.AllIncluding(c => c.Orders).FirstOrDefault();
             return new Customer
             {
                 Id = customer.Id,
                 FirstName = customer.FirstName,
                 LastName = customer.LastName,
                 Age = customer.Age,
-                // TODO implement logic for orders
-                //Orders = new List<string>()
+                Orders = customer.Orders        
             };
         }
 

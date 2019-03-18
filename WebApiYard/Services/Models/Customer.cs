@@ -9,6 +9,6 @@ namespace WebApiYard.Services.Models
         public int Age { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public IEnumerable<string> Orders { get; set; }
+        public IEnumerable<WebApiYard.Repositories.Models.Order> Orders { get; set; }
     }
 }

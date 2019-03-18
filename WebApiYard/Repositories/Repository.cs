@@ -107,13 +107,13 @@ namespace WebApiYard.Repositories
                 .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
 
-        //public IQueryable<T> AllIncluding(
-        //    Func<T, bool> predicate,
-        //    params Expression<Func<T, object>>[] includeProperties)
-        //{
-        //    var query = Include(includeProperties).AsNoTracking();
-        //    return query.Where(predicate);
-        //}       
+        public IEnumerable<T> AllIncluding(
+            Func<T, bool> predicate,
+            params Expression<Func<T, object>>[] includeProperties)
+        {
+            var query = Include(includeProperties).AsNoTracking();
+            return query.Where(predicate);
+        }
 
         //public virtual IQueryable<T> GetAllLazyLoad(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] children)
         //{

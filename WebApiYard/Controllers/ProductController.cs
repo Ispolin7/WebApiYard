@@ -49,7 +49,6 @@ namespace WebApiYard.Controllers
             {
                 return this.NotFound();
             }
-            // TODO 500 delete == true
             return this.productService.Get(id);
         }
 
@@ -109,15 +108,5 @@ namespace WebApiYard.Controllers
             }
             return this.NoContent();
         }
-
-        //[HttpGet("{test}")]
-        //public ActionResult<object> test(Guid id)
-        //{
-        //    var str = "Yellow";
-        //    var res = Enum.GetNames(typeof(Colors));
-        //    //Array.Exists(res, element => element == str);
-        //    return new { num = Array.Exists(res, element => element == str) };
-
-        //}
     }
 }

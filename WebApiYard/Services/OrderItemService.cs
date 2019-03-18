@@ -37,8 +37,7 @@ namespace WebApiYard.Services
                 PurchasePrice = o.PurchasePrice,
                 Color =  Enum.GetName(typeof(Colors), o.Color),
                 OrderId = o.OrderId,
-                ProductId = o.ProductId
-                // TODO add Order and Product models
+                ProductId = o.ProductId               
             });
         }
 
