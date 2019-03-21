@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using WebApiYard.Controllers.ViewModels;
 using WebApiYard.Services;
 using WebApiYard.Services.Interfaces;
+using WebApiYard.Services.Models;
 
 namespace WebApiYard.Controllers
 {

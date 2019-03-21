@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using WebApiYard.Repositories;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
+using WebApiYard.Mappings;
 
 namespace WebApiYard.Services
 {
     public class CustomerService : ICustomerService
     {
         private readonly IRepository<Repositories.Models.Customer> customerRepository;
+        private readonly RepositoryToServiceMapper upMapper;
 
         /// <summary>
         /// Initialization of all repositories
@@ -17,6 +19,7 @@ namespace WebApiYard.Services
         public CustomerService()
         {
             this.customerRepository = new Repository<Repositories.Models.Customer>();
+            this.upMapper = new RepositoryToServiceMapper();
         }
 
         //public CustomerService(Repository<Repositories.Models.Customer> repository)
@@ -30,15 +33,8 @@ namespace WebApiYard.Services
         /// <returns>Customer collection</returns>
         public IEnumerable<Customer> All()
         {
-            var customers = this.customerRepository.All();
-
-            return customers.Where(c => c.IsDelete == false).Select(x => new Customer
-            {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                Age = x.Age,             
-            });
+            var customers = this.customerRepository.All().Including(c => c.Orders);
+            return this.upMapper.MapCustomers(customers);
         }
 
         /// <summary>
@@ -48,16 +44,8 @@ namespace WebApiYard.Services
         /// <returns>Customer or throw an exception</returns>
         public Customer Get(Guid id)
         {
-            // TODO Exception
-            var customer = customerRepository.AllIncluding(c => c.Orders).FirstOrDefault();
-            return new Customer
-            {
-                Id = customer.Id,
-                FirstName = customer.FirstName,
-                LastName = customer.LastName,
-                Age = customer.Age,
-                Orders = customer.Orders        
-            };
+            var customer = customerRepository.GetById(id).Including(c => c.Orders).FirstOrDefault();
+            return this.upMapper.MapCustomer(customer);
         }
 
         /// <summary>
@@ -111,27 +99,12 @@ namespace WebApiYard.Services
         /// <returns>Customer model or throw an exception</returns>
         public Repositories.Models.Customer GetCustomerFromDB(Guid id)
         {
-            var customer = customerRepository.GetById(id);
+            var customer = customerRepository.GetById(id).FirstOrDefault();
             if (customer == null || customer.IsDelete == true)
             {
                 throw new ArgumentException("Customer not found");
             }
             return customer;
-        }
-
-        // TODO победить это)))
-        public Repositories.Models.Customer GetInclude(Guid id)
-        {
-            var customer = customerRepository
-                .AllIncluding(
-                    //c => c.Id == id,
-                    // o => o.IsDelete != true,
-                    //"Orders"
-                    //c => c.Orders.Select(o => o.ShippingAddress)
-                    //c => c.Orders
-
-                    );
-            return customer.First();
-        }
+        }       
     }
 }

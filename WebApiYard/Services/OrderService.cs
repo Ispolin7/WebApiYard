@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebApiYard.Mappings;
 using WebApiYard.Repositories;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
@@ -10,6 +11,7 @@ namespace WebApiYard.Services
     public class OrderService : IOrderService
     {
         private readonly IRepository<Repositories.Models.Order> orderRepository;
+        private readonly RepositoryToServiceMapper upMapper;
 
         /// <summary>
         /// Initialization of all repositories
@@ -17,6 +19,7 @@ namespace WebApiYard.Services
         public OrderService()
         {
             this.orderRepository = new Repository<Repositories.Models.Order>();
+            this.upMapper = new RepositoryToServiceMapper();
         }
 
 
@@ -26,15 +29,13 @@ namespace WebApiYard.Services
         /// <returns>Orders collection</returns>
         public IEnumerable<Order> All()
         {
-            var orders = this.orderRepository.All();
-
-            return orders.Select(o => new Order
-            {
-                Id = o.Id,
-                AddressId = o.AddressId,
-                OrderDate = o.OrderDate,
-                CustomerId = o.CustomerId
-            });
+            var orders = this.orderRepository.All()
+                .Where(o => o.IsDelete != true)
+                .Including(o => o.ShippingAddress)
+                //.Including(o => o.Items)
+                .ToList();
+            return upMapper.MapOrders(orders);
+           
         }
 
         /// <summary>
@@ -44,19 +45,15 @@ namespace WebApiYard.Services
         /// <returns>Order or throw an exception</returns>
         public Order Get(Guid id)
         {
-            var order = this.orderRepository.AllIncluding(o => o.ShippingAddress).First();
-            return new Order
-            {
-                Id = order.Id,
-                AddressId = order.AddressId,
-                CustomerId = order.CustomerId,
-                ShippingAddress = new Address
-                {
-                    Id = order.ShippingAddress.Id,
-                    StreetLine1 = order.ShippingAddress.StreetLine1,
-                    StreetLine2 = order.ShippingAddress.StreetLine2
-                }
-            };
+            var order = this.orderRepository
+                .GetById(id)
+                .Where(o => (o.IsDelete != true) && (o.Id == id))
+                .Including(o => o.ShippingAddress)
+                //.Including(o => o.Items)
+                .FirstOrDefault();
+
+            return upMapper.MapOrder(order);
+            
         }
 
         /// <summary>
@@ -109,7 +106,7 @@ namespace WebApiYard.Services
         /// <returns>Order model or throw an exception</returns>
         public Repositories.Models.Order GetOrderFromDB(Guid id)
         {
-            var order = orderRepository.GetById(id);
+            var order = orderRepository.GetById(id).FirstOrDefault();
             if (order == null || order.IsDelete == true)
             {
                 throw new ArgumentException("Order not found");

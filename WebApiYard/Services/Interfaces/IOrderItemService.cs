@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using WebApiYard.Controllers.ViewModels;
+using WebApiYard.Services.Models;
 
 namespace WebApiYard.Services.Interfaces
 {

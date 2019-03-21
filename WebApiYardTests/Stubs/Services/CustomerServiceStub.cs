@@ -21,7 +21,7 @@ namespace WebApiYardTests.Stubs.Services
                 FirstName = "Test",
                 LastName = "Name",
                 Age = 27,
-                Orders = new List<string> { "first order", "second order"}
+                //Orders = new List<string> { "first order", "second order"}
             };
         }
 

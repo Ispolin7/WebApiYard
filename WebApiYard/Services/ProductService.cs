@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebApiYard.Mappings;
 using WebApiYard.Repositories;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
@@ -10,6 +11,7 @@ namespace WebApiYard.Services
     public class ProductService : IProductService
     {
         private readonly IRepository<Repositories.Models.Product> productRepository;
+        private readonly RepositoryToServiceMapper upMapper;
 
         /// <summary>
         /// Initialization of all repositories
@@ -17,6 +19,7 @@ namespace WebApiYard.Services
         public ProductService()
         {
             this.productRepository = new Repository<Repositories.Models.Product>();
+            this.upMapper = new RepositoryToServiceMapper();
         }
 
         /// <summary>
@@ -26,14 +29,7 @@ namespace WebApiYard.Services
         public IEnumerable<Product> All()
         {
             var products = this.productRepository.All();
-
-            return products.Select(o => new Product
-            {
-                Id = o.Id,
-                Name = o.Name,
-                Description = o.Description,
-                Price = o.Price
-            });
+            return upMapper.MapProducts(products);
         }
 
         /// <summary>
@@ -43,14 +39,8 @@ namespace WebApiYard.Services
         /// <returns>Product or throw an exception</returns>
         public Product Get(Guid id)
         {
-            var product = this.GetProductFromDB(id);
-            return new Product
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price
-            };
+            var product = productRepository.GetById(id).FirstOrDefault();
+            return upMapper.MapProduct(product);
         }
 
         /// <summary>
@@ -103,7 +93,7 @@ namespace WebApiYard.Services
         /// <returns>Product model or throw an exception</returns>
         public Repositories.Models.Product GetProductFromDB(Guid id)
         {
-            var product = productRepository.GetById(id);
+            var product = productRepository.GetById(id).First();
             if (product == null || product.IsDelete == true)
             {
                 throw new ArgumentException("Product not found");

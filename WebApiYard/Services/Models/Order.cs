@@ -12,7 +12,7 @@ namespace WebApiYard.Services.Models
         public Address ShippingAddress { get; set; }
 
         public Guid CustomerId { get; set; }
-        public Customer Cusromer { get; set; }
+        //public Customer Cusromer { get; set; }
 
         public DateTime OrderDate { get; set; }
 

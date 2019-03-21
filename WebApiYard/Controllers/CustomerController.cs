@@ -125,16 +125,16 @@ namespace WebApiYard.Controllers
         }
 
   
-        [HttpGet("{id:Guid}/include")]
-        public ActionResult<Repositories.Models.Customer> Include(Guid id)
-        {
-            if (id == Guid.Empty)
-            {
-                return this.NotFound();
-            }
+        //[HttpGet("{id:Guid}/include")]
+        //public ActionResult<Repositories.Models.Customer> Include(Guid id)
+        //{
+        //    if (id == Guid.Empty)
+        //    {
+        //        return this.NotFound();
+        //    }
 
-            var customer = this.customerService.GetInclude(id);
-            return customer;
-        }
+        //    var customer = this.customerService.GetInclude(id);
+        //    return customer;
+        //}
     }
 }

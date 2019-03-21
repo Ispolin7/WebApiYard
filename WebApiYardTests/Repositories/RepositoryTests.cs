@@ -59,7 +59,7 @@ namespace UnitTests.Repositories
         [TestMethod]
         public void GetById_GetEntity_ExpectedTestCustomerName()
         {
-            var customer = TestRepository.GetById(TestCustomer.Id);
+            var customer = TestRepository.GetById(TestCustomer.Id).First();
 
             var expectedName = TestCustomer.FirstName;
             var currentName = customer.FirstName;

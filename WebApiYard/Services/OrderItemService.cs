@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using WebApiYard.Repositories;
 using WebApiYard.Services.Interfaces;
-using WebApiYard.Controllers.ViewModels;
 using WebApiYard.Common;
+using WebApiYard.Mappings;
+using WebApiYard.Services.Models;
 
 namespace WebApiYard.Services
 {
@@ -12,6 +13,7 @@ namespace WebApiYard.Services
     {
         private readonly IRepository<Repositories.Models.OrderItem> orderItemRepository;
         private readonly IRepository<Repositories.Models.Product> productRepository;
+        private readonly RepositoryToServiceMapper upMapper;
 
         /// <summary>
         /// Initialization of all repositories
@@ -20,6 +22,7 @@ namespace WebApiYard.Services
         {
             this.orderItemRepository = new Repository<Repositories.Models.OrderItem>();
             this.productRepository = new Repository<Repositories.Models.Product>();
+            this.upMapper = new RepositoryToServiceMapper();
         }
 
         /// <summary>
@@ -28,17 +31,8 @@ namespace WebApiYard.Services
         /// <returns>OrderItems collection</returns>
         public IEnumerable<OrderItem> All()
         {
-            var OrderItems = this.orderItemRepository.All();
-
-            return OrderItems.Select(o => new OrderItem
-            {
-                Id = o.Id,
-                Quantity = o.Quantity,
-                PurchasePrice = o.PurchasePrice,
-                Color =  Enum.GetName(typeof(Colors), o.Color),
-                OrderId = o.OrderId,
-                ProductId = o.ProductId               
-            });
+            var orderItems = this.orderItemRepository.All().Including(i => i.Product);
+            return upMapper.MapOrderItems(orderItems);
         }
 
         /// <summary>
@@ -48,18 +42,8 @@ namespace WebApiYard.Services
         /// <returns>OrderItem or throw an exception</returns>
         public OrderItem Get(Guid id)
         {
-            var orderItem = this.GetOrderItemFromDB(id);
-            return new OrderItem
-            {
-                Id = orderItem.Id,
-                Quantity = orderItem.Quantity,
-                PurchasePrice = orderItem.PurchasePrice,
-                Color = Enum.GetName(typeof(Colors), orderItem.Color),
-                // TODO add Order and Product models
-                OrderId = orderItem.OrderId,
-                ProductId = orderItem.ProductId
-                
-            };
+            var orderItem = orderItemRepository.GetById(id).Including(i => i.Product).FirstOrDefault();
+            return upMapper.MapOrderItem(orderItem);
         }
 
         /// <summary>
@@ -69,7 +53,7 @@ namespace WebApiYard.Services
         /// <returns>new OrderItems's id</returns>
         public Guid Save(OrderItem orderItem)
         {
-            var product = productRepository.GetById(orderItem.ProductId);
+            var product = productRepository.GetById(orderItem.ProductId).FirstOrDefault();
 
             var repositoryOrderItem = new Repositories.Models.OrderItem
             {
@@ -90,7 +74,7 @@ namespace WebApiYard.Services
         /// <returns>result status</returns>
         public bool Update(OrderItem orderItem)
         {
-            var product = productRepository.GetById(orderItem.ProductId);
+            var product = productRepository.GetById(orderItem.ProductId).FirstOrDefault();
             var oldOrderItem = this.GetOrderItemFromDB(orderItem.Id);
 
             oldOrderItem.Quantity = orderItem.Quantity;
@@ -123,7 +107,7 @@ namespace WebApiYard.Services
         /// <returns>OrderItem model or throw an exception</returns>
         public Repositories.Models.OrderItem GetOrderItemFromDB(Guid id)
         {
-            var orderItem = orderItemRepository.GetById(id);
+            var orderItem = orderItemRepository.GetById(id).FirstOrDefault();
             if (orderItem == null || orderItem.IsDelete == true)
             {
                 throw new ArgumentException("Order Item not found");
