@@ -15,6 +15,7 @@ using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using WebApiYard.Services.Interfaces;
+using WebApiYard.Services;
 
 namespace WebApiYard
 {
@@ -31,28 +32,14 @@ namespace WebApiYard
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper();
-            services.AddScoped<ICustomerService>();
+            services.AddScoped<ICustomerService, CustomerService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute(
-            //        name: "default",
-            //        template: "api/{controller}/{action}/{id?}");
-            //});
-            app.UseMvc();
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
-            //else
-            //{
-            //    app.UseHsts();
-            //}
+        {          
+            app.UseMvc();          
 
             app.UseGlobalExceptionHandler(x => {
                 x.ContentType = "application/json";           
