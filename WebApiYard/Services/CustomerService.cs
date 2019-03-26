@@ -5,12 +5,15 @@ using WebApiYard.Repositories;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
 using WebApiYard.Mappings;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using WebApiYard.Repositories.Models;
 
 namespace WebApiYard.Services
 {
     public class CustomerService : ICustomerService
     {
-        private readonly IRepository<Repositories.Models.Customer> customerRepository;
+        private readonly IRepository<Customer> customerRepository;
         private readonly RepositoryToServiceMapper upMapper;
 
         /// <summary>
@@ -18,7 +21,7 @@ namespace WebApiYard.Services
         /// </summary>
         public CustomerService()
         {
-            this.customerRepository = new Repository<Repositories.Models.Customer>();
+            this.customerRepository = new Repository<Customer>();
             this.upMapper = new RepositoryToServiceMapper();
         }
 
@@ -31,9 +34,12 @@ namespace WebApiYard.Services
         /// Get all customers from DB
         /// </summary>
         /// <returns>Customer collection</returns>
-        public IEnumerable<Customer> All()
+        public async Task<IEnumerable<CustomerServiceModel>> AllAsync()
         {
-            var customers = this.customerRepository.All().Including(c => c.Orders);
+            var customers = await (this.customerRepository
+                .All())
+                .Including(c => c.Orders)
+                .ToListAsync();
             return this.upMapper.MapCustomers(customers);
         }
 
@@ -42,9 +48,12 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Customer or throw an exception</returns>
-        public Customer Get(Guid id)
+        public async Task<CustomerServiceModel> GetAsync(Guid id)
         {
-            var customer = customerRepository.GetById(id).Including(c => c.Orders).FirstOrDefault();
+            var customer = await customerRepository
+                .GetById(id)
+                .Including(c => c.Orders)
+                .FirstAsync();
             return this.upMapper.MapCustomer(customer);
         }
 
@@ -53,15 +62,15 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="customer"></param>
         /// <returns>new Customer's id</returns>
-        public Guid Save(Customer customer)
+        public async Task<Guid> SaveAsync(CustomerServiceModel customer)
         {
-            var repositoryCustomer = new Repositories.Models.Customer
+            var repositoryCustomer = new Customer
             {
                 FirstName = customer.FirstName,
                 LastName = customer.LastName,
                 Age = customer.Age               
             };
-            return customerRepository.Insert(repositoryCustomer);
+            return await customerRepository.InsertAsync(repositoryCustomer);
         }
 
         /// <summary>
@@ -69,14 +78,14 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="customer"></param>
         /// <returns>result status</returns>
-        public bool Update(Customer customer)
+        public async Task<bool> UpdateAsync(CustomerServiceModel customer)
         {
-            var oldCustomer = this.GetCustomerFromDB(customer.Id);           
+            var oldCustomer = await this.GetCustomerFromDBAsync(customer.Id);           
             oldCustomer.FirstName = customer.FirstName;
             oldCustomer.LastName = customer.LastName;
             oldCustomer.Age = customer.Age;
             oldCustomer.UpdatedAt = DateTime.Now;
-            return customerRepository.Update(oldCustomer);
+            return await customerRepository.UpdateAsync(oldCustomer);
         }
 
         /// <summary>
@@ -84,12 +93,12 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>result status</returns>
-        public bool Remove(Guid id)
+        public async Task<bool> RemoveAsync(Guid id)
         {
-            var customer = this.GetCustomerFromDB(id);
+            var customer = await this.GetCustomerFromDBAsync(id);
             customer.IsDelete = true;
             customer.UpdatedAt = DateTime.Now;
-            return customerRepository.Update(customer);
+            return await customerRepository.UpdateAsync(customer);
         }
 
         /// <summary>
@@ -97,9 +106,9 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Customer model or throw an exception</returns>
-        public Repositories.Models.Customer GetCustomerFromDB(Guid id)
+        public async Task<Customer> GetCustomerFromDBAsync(Guid id)
         {
-            var customer = customerRepository.GetById(id).FirstOrDefault();
+            var customer = await customerRepository.GetById(id).FirstAsync();
             if (customer == null || customer.IsDelete == true)
             {
                 throw new ArgumentException("Customer not found");

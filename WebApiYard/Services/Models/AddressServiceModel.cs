@@ -1,28 +1,22 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using WebApiYard.Services.Interfaces;
 
-namespace WebApiYard.Controllers.ViewModels
+namespace WebApiYard.Services.Models
 {
-    public class Address
+    public class AddressServiceModel : IModelService
     {
         public Guid Id { get; set; }
 
-        [Required]
         public string StreetLine1 { get; set; }
 
-        [Required]
         public string StreetLine2 { get; set; }
 
-        [Required]
         public string City { get; set; }
 
-        [Required]
         public string State { get; set; }
 
-        [Required]
         public string PostalCode { get; set; }
 
-        [Required]
         public string Country { get; set; }
     }
 }

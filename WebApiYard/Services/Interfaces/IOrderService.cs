@@ -5,7 +5,7 @@ using WebApiYard.Services.Models;
 
 namespace WebApiYard.Services.Interfaces
 {
-    interface IOrderService : IEntityService<Order>
+    interface IOrderService : IEntityService<Models.OrderServiceModel>
     {
     }
 }

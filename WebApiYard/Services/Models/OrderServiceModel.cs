@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using WebApiYard.Controllers.ViewModels;
+using WebApiYard.Services.Interfaces;
 
 namespace WebApiYard.Services.Models
 {
-    public class Order
+    public class OrderServiceModel : IModelService
     {
         public Guid Id { get; set; }
 
         public Guid AddressId { get; set; }
-        public Address ShippingAddress { get; set; }
+        public AddressServiceModel ShippingAddress { get; set; }
 
         public Guid CustomerId { get; set; }
-        //public Customer Cusromer { get; set; }
+        public CustomerServiceModel Cusromer { get; set; }
 
         public DateTime OrderDate { get; set; }
 
-        public IEnumerable<OrderItem> Items { get; set; }  
+        public IEnumerable<OrderItemServiceModel> Items { get; set; }  
     }
 }

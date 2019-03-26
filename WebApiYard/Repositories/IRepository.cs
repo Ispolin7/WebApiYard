@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace WebApiYard.Repositories
 {
@@ -9,8 +10,8 @@ namespace WebApiYard.Repositories
     {
         IQueryable<T> All();
         IQueryable<T> GetById(Guid id);
-        Guid Insert(T entity);
-        bool Delete(Guid id);
-        bool Update(T entity);        
+        Task<Guid> InsertAsync(T entity);
+        Task<bool> DeleteAsync(Guid id);
+        Task<bool> UpdateAsync(T entity);        
     }
 }

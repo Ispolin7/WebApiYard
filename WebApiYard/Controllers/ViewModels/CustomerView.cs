@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebApiYard.Controllers.ViewModels
 {
-    public class Customer
+    public class CustomerView
     {
         public Guid Id { get; set; }
 

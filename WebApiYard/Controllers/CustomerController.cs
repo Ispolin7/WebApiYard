@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using WebApiYard.Services;
+using WebApiYard.Controllers.ViewModels;
 using WebApiYard.Services.Interfaces;
+using WebApiYard.Services.Models;
 
 namespace WebApiYard.Controllers
 {
@@ -20,9 +22,9 @@ namespace WebApiYard.Controllers
         /// CustomerController constructor
         /// </summary>
         /// <param name="mapper"></param>
-        public CustomerController(IMapper mapper)
+        public CustomerController(IMapper mapper, ICustomerService service)
         {
-            this.customerService = new CustomerService();
+            this.customerService = service ?? throw new ArgumentNullException(nameof(service));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -43,10 +45,10 @@ namespace WebApiYard.Controllers
         /// </summary>
         /// <returns>Customers collection</returns>
         [HttpGet]
-        public ActionResult<IEnumerable<ViewModels.Customer>> GetAll()
+        public async Task<ActionResult<IEnumerable<CustomerView>>> GetAllAsync()
         {
-            var customers = this.customerService.All();
-            var mapped = this.mapper.Map<IEnumerable<ViewModels.Customer>>(customers);
+            var customers = await this.customerService.AllAsync();
+            var mapped = this.mapper.Map<IEnumerable<CustomerView>>(customers);
             return mapped.ToList();
         }
 
@@ -56,15 +58,15 @@ namespace WebApiYard.Controllers
         /// <param name="id"></param>
         /// <returns>Customer information</returns>
         [HttpGet("{id:Guid}")]
-        public ActionResult<Controllers.ViewModels.Customer> GetById(Guid id)
+        public async Task<ActionResult<CustomerView>> GetByIdAsync(Guid id)
         {
-            if(id == Guid.Empty)
+            if (id == Guid.Empty)
             {
-                return this.NotFound();
+                return NotFound();
             }
 
-            var customer = this.customerService.Get(id);
-            return this.mapper.Map<ViewModels.Customer>(customer);
+            var customer = await this.customerService.GetAsync(id);
+            return this.mapper.Map<CustomerView>(customer);
         }
 
         /// <summary>
@@ -73,16 +75,17 @@ namespace WebApiYard.Controllers
         /// <param name="customer"></param>
         /// <returns>new customer id</returns>
         [HttpPost]
-        public ActionResult Post([FromBody] Controllers.ViewModels.Customer customer)
+        public async Task<ActionResult> PostAsync([FromBody] CustomerView customer)
         {
-            if(!this.ModelState.IsValid)
+            if (!this.ModelState.IsValid)
             {
                 return this.BadRequest();
+                // TODO test return this.ValidationProblem();
             }
 
-            var customerServiceModel = this.mapper.Map<Services.Models.Customer>(customer);
-            var id = this.customerService.Save(customerServiceModel);
-            return this.Created("", new { Id = id});
+            var customerServiceModel = this.mapper.Map<CustomerServiceModel>(customer);
+            var id = await this.customerService.SaveAsync(customerServiceModel);
+            return this.Created("", new { Id = id });
         }
 
         /// <summary>
@@ -92,18 +95,19 @@ namespace WebApiYard.Controllers
         /// <param name="customer"></param>
         /// <returns>updated customer</returns>
         [HttpPut("{id:Guid}")]
-        public ActionResult Put(Guid id, [FromBody]  Controllers.ViewModels.Customer customer)
+        public async Task<ActionResult> PutAsync(Guid id, [FromBody] CustomerView customer)
         {
             if (!this.ModelState.IsValid)
             {
                 return this.ValidationProblem();
             }
-            customer.Id = id;
-            var customerServiceModel = this.mapper.Map<Services.Models.Customer>(customer);
 
-            if (customerService.Update(customerServiceModel))
+            //customer.Id = id;
+            var customerServiceModel = this.mapper.Map<CustomerServiceModel>(customer);
+
+            if (await customerService.UpdateAsync(customerServiceModel))
             {
-                return this.Ok(new { success = true});
+                return this.Ok(new { success = true });
             }
             return this.BadRequest();
 
@@ -115,26 +119,13 @@ namespace WebApiYard.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id:Guid}")]
-        public ActionResult Delete(Guid id)
+        public async Task<ActionResult> DeleteAsync(Guid id)
         {
-            if (!customerService.Remove(id))
+            if (!await customerService.RemoveAsync(id))
             {
                 return this.BadRequest();
             }
             return this.NoContent();
         }
-
-  
-        //[HttpGet("{id:Guid}/include")]
-        //public ActionResult<Repositories.Models.Customer> Include(Guid id)
-        //{
-        //    if (id == Guid.Empty)
-        //    {
-        //        return this.NotFound();
-        //    }
-
-        //    var customer = this.customerService.GetInclude(id);
-        //    return customer;
-        //}
     }
 }

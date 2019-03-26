@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using WebApiYard.Controllers.ValidationModels;
 using WebApiYard.Services;
 using WebApiYard.Services.Interfaces;
+using WebApiYard.Services.Models;
 
 namespace WebApiYard.Controllers
 {
@@ -31,9 +33,9 @@ namespace WebApiYard.Controllers
         /// </summary>
         /// <returns>Product collection</returns>
         [HttpGet]
-        public ActionResult<IEnumerable<Services.Models.Product>> GetAll()
+        public async Task<ActionResult<IEnumerable<ProductServiceModel>>> GetAllAsync()
         {
-            return this.productService.All().ToList();
+            return Ok(await this.productService.AllAsync());
         }
 
         /// <summary>
@@ -42,13 +44,13 @@ namespace WebApiYard.Controllers
         /// <param name="id"></param>
         /// <returns>Product information</returns>
         [HttpGet("{id:Guid}")]
-        public ActionResult<Services.Models.Product> GetById(Guid id)
+        public async Task<ActionResult<ProductServiceModel>> GetByIdAsync(Guid id)
         {
             if (id == Guid.Empty)
             {
                 return this.NotFound();
             }
-            return this.productService.Get(id);
+            return await this.productService.GetAsync(id);
         }
 
         /// <summary>
@@ -57,15 +59,15 @@ namespace WebApiYard.Controllers
         /// <param name="product"></param>
         /// <returns>new Product's id</returns>
         [HttpPost]
-        public ActionResult Post([FromBody] ValidationModels.ProductCreate product)
+        public async Task<ActionResult> PostAsync([FromBody] ProductCreate product)
         {
             if (!this.ModelState.IsValid)
             {
                 return this.BadRequest();
             }
 
-            var productServiceModel = this.mapper.Map<Services.Models.Product>(product);
-            var id = this.productService.Save(productServiceModel);
+            var productServiceModel = this.mapper.Map<ProductServiceModel>(product);
+            var id = await this.productService.SaveAsync(productServiceModel);
             return this.Created("", new { Id = id });
         }
 
@@ -76,16 +78,16 @@ namespace WebApiYard.Controllers
         /// <param name="product"></param>
         /// <returns>updated Product</returns>
         [HttpPut("{id:Guid}")]
-        public ActionResult Put(Guid id, [FromBody]  ValidationModels.ProductUpdate product)
+        public async Task<ActionResult> PutAsync(Guid id, [FromBody] ProductUpdate product)
         {
             if (!this.ModelState.IsValid)
             {
                 return this.ValidationProblem();
             }
 
-            var productServiceModel = this.mapper.Map<Services.Models.Product>(product);
+            var productServiceModel = this.mapper.Map<ProductServiceModel>(product);
 
-            if (this.productService.Update(productServiceModel))
+            if (await this.productService.UpdateAsync(productServiceModel))
             {
                 return this.Ok(new { success = true });
             }
@@ -99,9 +101,9 @@ namespace WebApiYard.Controllers
         /// <param name="id"></param>
         /// <returns>no contetnt</returns>
         [HttpDelete("{id:Guid}")]
-        public ActionResult Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
-            if (!this.productService.Remove(id))
+            if (!await this.productService.RemoveAsync(id))
             {
                 return this.BadRequest();
             }

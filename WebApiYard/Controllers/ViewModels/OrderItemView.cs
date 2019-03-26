@@ -1,9 +1,10 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using WebApiYard.Common;
 
-namespace WebApiYard.Services.Models
+namespace WebApiYard.Controllers.ViewModels
 {
-    public class OrderItem
+    public class OrderItemView
     {
         public Guid Id { get; set; }
 
@@ -14,10 +15,10 @@ namespace WebApiYard.Services.Models
         public string Color { get; set; }
 
         public Guid OrderId { get; set; }
-        public Order Order { get; set; }
+        public OrderView Order { get; set; }
 
         public Guid ProductId { get; set; }
-        public Product Product { get; set; }
+        public ProductView Products { get; set; }
     }
 
 }

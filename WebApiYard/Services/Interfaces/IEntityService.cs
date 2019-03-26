@@ -7,10 +7,10 @@ namespace WebApiYard.Services.Interfaces
 {
     public interface IEntityService<T>
     {
-        IEnumerable<T> All();
-        T Get(Guid id);
-        Guid Save(T entity);
-        bool Update(T entity);
-        bool Remove(Guid id);
+        Task<IEnumerable<T>> AllAsync();
+        Task<T> GetAsync(Guid id);
+        Task<Guid> SaveAsync(T entity);
+        Task<bool> UpdateAsync(T entity);
+        Task<bool> RemoveAsync(Guid id);
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApiYard.Controllers.ViewModels
 {
-    public class Product
+    public class ProductView
     {      
         public Guid Id { get; set; }
 

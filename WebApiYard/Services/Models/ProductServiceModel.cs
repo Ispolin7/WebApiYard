@@ -1,8 +1,9 @@
 ﻿using System;
+using WebApiYard.Services.Interfaces;
 
 namespace WebApiYard.Services.Models
 {
-    public class Product
+    public class ProductServiceModel : IModelService
     {      
         public Guid Id { get; set; }
 

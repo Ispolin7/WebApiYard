@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Threading.Tasks;
 using WebApiYard.DAL;
 
 namespace WebApiYard.Repositories
@@ -48,10 +47,10 @@ namespace WebApiYard.Repositories
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public Guid Insert(T entity)
+        public async Task<Guid> InsertAsync(T entity)
         {
-            dbSet.Add(entity);
-            dbContext.SaveChanges();
+            await dbSet.AddAsync(entity);
+            await dbContext.SaveChangesAsync();
             return entity.Id;
         }
 
@@ -60,10 +59,11 @@ namespace WebApiYard.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public bool Delete(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
+            // TODO RemoveAsync
             dbSet.Remove(dbSet.FirstOrDefault(e => e.Id == id));
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             return true;
         }
 
@@ -73,11 +73,11 @@ namespace WebApiYard.Repositories
         /// <param name="id"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public bool Update(T entity)
+        public async Task<bool> UpdateAsync(T entity)
         {
             entity.UpdatedAt = DateTime.Now;
             dbSet.Update(entity);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             return true;
         }        
     }

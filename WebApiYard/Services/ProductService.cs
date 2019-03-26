@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using WebApiYard.Mappings;
 using WebApiYard.Repositories;
+using WebApiYard.Repositories.Models;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
 
@@ -10,7 +12,7 @@ namespace WebApiYard.Services
 {
     public class ProductService : IProductService
     {
-        private readonly IRepository<Repositories.Models.Product> productRepository;
+        private readonly IRepository<Product> productRepository;
         private readonly RepositoryToServiceMapper upMapper;
 
         /// <summary>
@@ -18,7 +20,7 @@ namespace WebApiYard.Services
         /// </summary>
         public ProductService()
         {
-            this.productRepository = new Repository<Repositories.Models.Product>();
+            this.productRepository = new Repository<Product>();
             this.upMapper = new RepositoryToServiceMapper();
         }
 
@@ -26,9 +28,9 @@ namespace WebApiYard.Services
         /// Get all products from DB
         /// </summary>
         /// <returns>products collection</returns>
-        public IEnumerable<Product> All()
+        public async Task<IEnumerable<ProductServiceModel>> AllAsync()
         {
-            var products = this.productRepository.All();
+            var products = await this.productRepository.All().ToListAsync();
             return upMapper.MapProducts(products);
         }
 
@@ -37,9 +39,9 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Product or throw an exception</returns>
-        public Product Get(Guid id)
+        public async Task<ProductServiceModel> GetAsync(Guid id)
         {
-            var product = productRepository.GetById(id).FirstOrDefault();
+            var product = await productRepository.GetById(id).FirstAsync();
             return upMapper.MapProduct(product);
         }
 
@@ -48,15 +50,15 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="product"></param>
         /// <returns>new products's id</returns>
-        public Guid Save(Product product)
+        public async Task<Guid> SaveAsync(ProductServiceModel product)
         {
-            var repositoryProduct = new Repositories.Models.Product
+            var repositoryProduct = new Product
             {
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price
             };
-            return this.productRepository.Insert(repositoryProduct);
+            return await this.productRepository.InsertAsync(repositoryProduct);
         }
 
         /// <summary>
@@ -64,13 +66,13 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="product"></param>
         /// <returns>result status</returns>
-        public bool Update(Product product)
+        public async Task<bool> UpdateAsync(ProductServiceModel product)
         {
-            var oldProduct = this.GetProductFromDB(product.Id);
+            var oldProduct = await this.GetProductFromDBAsync(product.Id);
             oldProduct.Name = product.Name;
             oldProduct.Description = product.Description;
             oldProduct.Price = product.Price;
-            return this.productRepository.Update(oldProduct);
+            return await this.productRepository.UpdateAsync(oldProduct);
         }
 
         /// <summary>
@@ -78,12 +80,12 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>result status</returns>
-        public bool Remove(Guid id)
+        public async Task<bool> RemoveAsync(Guid id)
         {
-            var product = this.GetProductFromDB(id);
+            var product = await this.GetProductFromDBAsync(id);
             product.IsDelete = true;
             product.UpdatedAt = DateTime.Now;
-            return this.productRepository.Update(product);
+            return await this.productRepository.UpdateAsync(product);
         }
 
         /// <summary>
@@ -91,9 +93,9 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Product model or throw an exception</returns>
-        public Repositories.Models.Product GetProductFromDB(Guid id)
+        public async Task<Product> GetProductFromDBAsync(Guid id)
         {
-            var product = productRepository.GetById(id).First();
+            var product = await productRepository.GetById(id).FirstAsync();
             if (product == null || product.IsDelete == true)
             {
                 throw new ArgumentException("Product not found");

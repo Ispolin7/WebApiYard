@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using WebApiYard.Repositories;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Common;
 using WebApiYard.Mappings;
 using WebApiYard.Services.Models;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using WebApiYard.Repositories.Models;
 
 namespace WebApiYard.Services
 {
     public class OrderItemService : IOrderItemService
     {
-        private readonly IRepository<Repositories.Models.OrderItem> orderItemRepository;
-        private readonly IRepository<Repositories.Models.Product> productRepository;
+        private readonly IRepository<OrderItem> orderItemRepository;
+        private readonly IRepository<Product> productRepository;
         private readonly RepositoryToServiceMapper upMapper;
 
         /// <summary>
@@ -20,8 +22,8 @@ namespace WebApiYard.Services
         /// </summary>
         public OrderItemService()
         {
-            this.orderItemRepository = new Repository<Repositories.Models.OrderItem>();
-            this.productRepository = new Repository<Repositories.Models.Product>();
+            this.orderItemRepository = new Repository<OrderItem>();
+            this.productRepository = new Repository<Product>();
             this.upMapper = new RepositoryToServiceMapper();
         }
 
@@ -29,9 +31,12 @@ namespace WebApiYard.Services
         /// Get all OrderItems from DB
         /// </summary>
         /// <returns>OrderItems collection</returns>
-        public IEnumerable<OrderItem> All()
+        public async Task<IEnumerable<OrderItemServiceModel>> AllAsync()
         {
-            var orderItems = this.orderItemRepository.All().Including(i => i.Product);
+            var orderItems = await this.orderItemRepository
+                .All()
+                .Including(i => i.Product)
+                .ToListAsync();
             return upMapper.MapOrderItems(orderItems);
         }
 
@@ -40,9 +45,12 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>OrderItem or throw an exception</returns>
-        public OrderItem Get(Guid id)
+        public async Task<OrderItemServiceModel> GetAsync(Guid id)
         {
-            var orderItem = orderItemRepository.GetById(id).Including(i => i.Product).FirstOrDefault();
+            var orderItem = await orderItemRepository
+                .GetById(id)
+                .Including(i => i.Product)
+                .FirstAsync();
             return upMapper.MapOrderItem(orderItem);
         }
 
@@ -51,11 +59,13 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="orderItem"></param>
         /// <returns>new OrderItems's id</returns>
-        public Guid Save(OrderItem orderItem)
+        public async Task<Guid> SaveAsync(OrderItemServiceModel orderItem)
         {
-            var product = productRepository.GetById(orderItem.ProductId).FirstOrDefault();
+            var product = await productRepository
+                .GetById(orderItem.ProductId)
+                .FirstAsync();
 
-            var repositoryOrderItem = new Repositories.Models.OrderItem
+            var repositoryOrderItem = new OrderItem
             {
                 Id = orderItem.Id,
                 Quantity = orderItem.Quantity,
@@ -64,7 +74,7 @@ namespace WebApiYard.Services
                 OrderId = orderItem.OrderId,
                 ProductId = orderItem.ProductId
             };
-            return this.orderItemRepository.Insert(repositoryOrderItem);
+            return await this.orderItemRepository.InsertAsync(repositoryOrderItem);
         }
 
         /// <summary>
@@ -72,10 +82,13 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="orderItem"></param>
         /// <returns>result status</returns>
-        public bool Update(OrderItem orderItem)
+        public async Task<bool> UpdateAsync(OrderItemServiceModel orderItem)
         {
-            var product = productRepository.GetById(orderItem.ProductId).FirstOrDefault();
-            var oldOrderItem = this.GetOrderItemFromDB(orderItem.Id);
+            var product = await productRepository
+                .GetById(orderItem.ProductId)
+                .FirstAsync();
+
+            var oldOrderItem = await this.GetOrderItemFromDBAsync(orderItem.Id);
 
             oldOrderItem.Quantity = orderItem.Quantity;
             oldOrderItem.PurchasePrice = orderItem.Quantity * product.Price;
@@ -84,7 +97,7 @@ namespace WebApiYard.Services
             oldOrderItem.ProductId = orderItem.ProductId;
             oldOrderItem.UpdatedAt = DateTime.UtcNow;
 
-            return this.orderItemRepository.Update(oldOrderItem);
+            return await this.orderItemRepository.UpdateAsync(oldOrderItem);
         }
 
         /// <summary>
@@ -92,12 +105,12 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>result status</returns>
-        public bool Remove(Guid id)
+        public async Task<bool> RemoveAsync(Guid id)
         {
-            var orderItem = this.GetOrderItemFromDB(id);
+            var orderItem = await this.GetOrderItemFromDBAsync(id);
             orderItem.IsDelete = true;
             orderItem.UpdatedAt = DateTime.Now;
-            return this.orderItemRepository.Update(orderItem);
+            return await this.orderItemRepository.UpdateAsync(orderItem);
         }
 
         /// <summary>
@@ -105,9 +118,9 @@ namespace WebApiYard.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>OrderItem model or throw an exception</returns>
-        public Repositories.Models.OrderItem GetOrderItemFromDB(Guid id)
+        public async Task<OrderItem> GetOrderItemFromDBAsync(Guid id)
         {
-            var orderItem = orderItemRepository.GetById(id).FirstOrDefault();
+            var orderItem = await orderItemRepository.GetById(id).FirstAsync();
             if (orderItem == null || orderItem.IsDelete == true)
             {
                 throw new ArgumentException("Order Item not found");

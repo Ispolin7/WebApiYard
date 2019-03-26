@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using WebApiYard.Controllers.ValidationModels;
 using WebApiYard.Services;
 using WebApiYard.Services.Interfaces;
+using WebApiYard.Services.Models;
 
 namespace WebApiYard.Controllers
 {
@@ -31,9 +33,9 @@ namespace WebApiYard.Controllers
         /// </summary>
         /// <returns>Order collection</returns>
         [HttpGet]
-        public ActionResult<IEnumerable<Services.Models.Order>> GetAll()
+        public async Task<ActionResult<IEnumerable<OrderServiceModel>>> GetAllAsync()
         {
-            return this.orderService.All().ToList();
+            return Ok(await this.orderService.AllAsync());
         }
 
         /// <summary>
@@ -42,14 +44,14 @@ namespace WebApiYard.Controllers
         /// <param name="id"></param>
         /// <returns>Order information</returns>
         [HttpGet("{id:Guid}")]
-        public ActionResult<Services.Models.Order> GetById(Guid id)
+        public async Task<ActionResult<OrderServiceModel>> GetByIdAsync(Guid id)
         {
             if (id == Guid.Empty)
             {
                 return this.NotFound();
             }
 
-            return this.orderService.Get(id);           
+            return await this.orderService.GetAsync(id);           
         }
 
         /// <summary>
@@ -58,15 +60,15 @@ namespace WebApiYard.Controllers
         /// <param name="order"></param>
         /// <returns>new Order's id</returns>
         [HttpPost]
-        public ActionResult Post([FromBody] ValidationModels.OrderCreate order)
+        public async Task<ActionResult> PostAsync([FromBody] OrderCreate order)
         {
             if (!this.ModelState.IsValid)
             {
                 return this.BadRequest();
             }
 
-            var orderServiceModel = this.mapper.Map<Services.Models.Order>(order);
-            var id = this.orderService.Save(orderServiceModel);
+            var orderServiceModel = this.mapper.Map<OrderServiceModel>(order);
+            var id = await this.orderService.SaveAsync(orderServiceModel);
             return this.Created("", new { Id = id });
         }
 
@@ -77,16 +79,16 @@ namespace WebApiYard.Controllers
         /// <param name="order"></param>
         /// <returns>updated Order</returns>
         [HttpPut("{id:Guid}")]
-        public ActionResult Put(Guid id, [FromBody]  ValidationModels.OrderUpdate order)
+        public async Task<ActionResult> PutAsync(Guid id, [FromBody]  OrderUpdate order)
         {
             if (!this.ModelState.IsValid)
             {
                 return this.ValidationProblem();
             }
             
-            var orderServiceModel = this.mapper.Map<Services.Models.Order>(order);
+            var orderServiceModel = this.mapper.Map<OrderServiceModel>(order);
 
-            if (this.orderService.Update(orderServiceModel))
+            if (await this.orderService.UpdateAsync(orderServiceModel))
             {
                 return this.Ok(new { success = true });
             }
@@ -100,9 +102,9 @@ namespace WebApiYard.Controllers
         /// <param name="id"></param>
         /// <returns>no contetnt</returns>
         [HttpDelete("{id:Guid}")]
-        public ActionResult Delete(Guid id)
+        public async Task<ActionResult> DeleteAsync(Guid id)
         {
-            if (!this.orderService.Remove(id))
+            if (!await this.orderService.RemoveAsync(id))
             {
                 return this.BadRequest();
             }

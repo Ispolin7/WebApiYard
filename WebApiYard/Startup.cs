@@ -14,6 +14,7 @@ using AutoMapper;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using WebApiYard.Services.Interfaces;
 
 namespace WebApiYard
 {
@@ -30,7 +31,8 @@ namespace WebApiYard
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper();
-            services.AddMvc()/*.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)*/;
+            services.AddScoped<ICustomerService>();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
