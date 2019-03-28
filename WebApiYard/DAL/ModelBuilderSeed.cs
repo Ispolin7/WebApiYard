@@ -50,7 +50,6 @@ namespace WebApiYard.DAL
                     Id = new Guid("9458ab9b-6d9e-47a1-1399-08d6ab95178b"),
                     AddressId = new Guid("2e77d667-ec12-4cca-a582-c950db6e6720"),
                     CustomerId = new Guid("b37f2458-c036-4970-e98d-08d6ab94d635"),
-                    OrderDate = DateTime.Now,
                     IsDelete = false,
                     CreatedAT = DateTime.Now
                 },
@@ -59,7 +58,6 @@ namespace WebApiYard.DAL
                     Id = new Guid("59d823a1-86dd-4243-139a-08d6ab95178b"),
                     AddressId = new Guid("2e77d667-ec12-4cca-a582-c950db6e6720"),
                     CustomerId = new Guid("b37f2458-c036-4970-e98d-08d6ab94d635"),
-                    OrderDate = DateTime.Now,
                     IsDelete = false,
                     CreatedAT = DateTime.Now
                 }

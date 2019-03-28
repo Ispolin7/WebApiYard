@@ -20,10 +20,10 @@ namespace WebApiYard.Services
         /// <summary>
         /// Initialization of all repositories
         /// </summary>
-        public OrderItemService()
+        public OrderItemService(Repository<OrderItem> repositoryOrderItem, Repository<Product> repositoryProduct)
         {
-            this.orderItemRepository = new Repository<OrderItem>();
-            this.productRepository = new Repository<Product>();
+            this.orderItemRepository = repositoryOrderItem;
+            this.productRepository = repositoryProduct;
             this.upMapper = new RepositoryToServiceMapper();
         }
 
@@ -35,7 +35,8 @@ namespace WebApiYard.Services
         {
             var orderItems = await this.orderItemRepository
                 .All()
-                .Including(i => i.Product)
+                .Include(i => i.Product)
+                .Include(i => i.Order)
                 .ToListAsync();
             return upMapper.MapOrderItems(orderItems);
         }
@@ -49,7 +50,8 @@ namespace WebApiYard.Services
         {
             var orderItem = await orderItemRepository
                 .GetById(id)
-                .Including(i => i.Product)
+                .Include(i => i.Product)
+                .Include(i => i.Order)
                 .FirstAsync();
             return upMapper.MapOrderItem(orderItem);
         }
@@ -89,15 +91,10 @@ namespace WebApiYard.Services
                 .FirstAsync();
 
             var oldOrderItem = await this.GetOrderItemFromDBAsync(orderItem.Id);
+            var updatedOrderItem = orderItem.UpdateProperties(oldOrderItem);
+            updatedOrderItem.PurchasePrice = updatedOrderItem.Quantity * product.Price;
 
-            oldOrderItem.Quantity = orderItem.Quantity;
-            oldOrderItem.PurchasePrice = orderItem.Quantity * product.Price;
-            oldOrderItem.Color = (int)(Colors)Enum.Parse(typeof(Colors), orderItem.Color);
-            oldOrderItem.OrderId = orderItem.OrderId;
-            oldOrderItem.ProductId = orderItem.ProductId;
-            oldOrderItem.UpdatedAt = DateTime.UtcNow;
-
-            return await this.orderItemRepository.UpdateAsync(oldOrderItem);
+            return await this.orderItemRepository.UpdateAsync(updatedOrderItem);
         }
 
         /// <summary>

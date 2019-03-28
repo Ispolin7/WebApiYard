@@ -7,7 +7,7 @@ namespace WebApiYard.Controllers.ValidationModels
     public class ProductUpdate : ProductCreate
     {
         [Required]
-        [ProductExistsDB]
+        //[ProductExistsDB]
         public Guid Id { get; set; }
     }
 }

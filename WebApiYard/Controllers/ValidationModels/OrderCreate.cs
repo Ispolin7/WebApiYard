@@ -9,11 +9,11 @@ namespace WebApiYard.Controllers.ValidationModels
     public class OrderCreate
     {
         [Required]
-        [AddressExistsDB]
+        //[AddressExistsDB]
         public Guid AddressId { get; set; }
 
         [Required]
-        [CustomerExistsDB]
+        //[CustomerExistsDB]
         public Guid CustomerId { get; set; }
     }
 }

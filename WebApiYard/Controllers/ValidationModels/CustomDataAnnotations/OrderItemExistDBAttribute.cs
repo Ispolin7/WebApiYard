@@ -7,10 +7,17 @@ namespace WebApiYard.Controllers.ValidationModels.CustomDataAnnotations
 {
     public class OrderItemExistDBAttribute : ValidationAttribute
     {
+        public Repository<OrderItem> Repository { get; set; }
+
+        public OrderItemExistDBAttribute(Repository<OrderItem> itemRepository)
+        {
+            Repository = itemRepository;
+        }
+
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var repository = new Repository<OrderItem>();
-            if (repository.GetById((Guid)value) == null)
+            //var repository = new Repository<OrderItem>();
+            if (Repository.GetById((Guid)value) == null)
             {
                 return new ValidationResult("Order Item not found");
             }

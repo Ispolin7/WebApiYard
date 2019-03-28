@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using WebApiYard.Controllers.ViewModels;
+using WebApiYard.Controllers.ValidationModels;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
 
@@ -28,28 +27,17 @@ namespace WebApiYard.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        ///// <summary>
-        ///// Constructor for tests
-        ///// </summary>
-        ///// <param name="mapper"></param>
-        ///// <param name="service"></param>
-        //public CustomerController(/*IMapper mapper, */ICustomerService service)
-        //{
-        //    this.customerService = service;
-        //    //this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        //}
-
-
         /// <summary>
         /// Display a listing of the resource.
         /// </summary>
         /// <returns>Customers collection</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerView>>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<CustomerServiceModel>>> GetAllAsync()
         {
-            var customers = await this.customerService.AllAsync();
-            var mapped = this.mapper.Map<IEnumerable<CustomerView>>(customers);
-            return mapped.ToList();
+            //var customers = await this.customerService.AllAsync();
+            //var mapped = this.mapper.Map<IEnumerable<CustomerView>>(customers);
+            //return mapped.ToList();
+            return Ok(await this.customerService.AllAsync());
         }
 
         /// <summary>
@@ -58,15 +46,14 @@ namespace WebApiYard.Controllers
         /// <param name="id"></param>
         /// <returns>Customer information</returns>
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<CustomerView>> GetByIdAsync(Guid id)
+        public async Task<ActionResult<CustomerServiceModel>> GetByIdAsync(Guid id)
         {
             if (id == Guid.Empty)
             {
                 return NotFound();
             }
 
-            var customer = await this.customerService.GetAsync(id);
-            return this.mapper.Map<CustomerView>(customer);
+            return await this.customerService.GetAsync(id);
         }
 
         /// <summary>
@@ -75,14 +62,8 @@ namespace WebApiYard.Controllers
         /// <param name="customer"></param>
         /// <returns>new customer id</returns>
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] CustomerView customer)
+        public async Task<ActionResult> PostAsync([FromBody] CustomerValidation customer)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest();
-                // TODO test return this.ValidationProblem();
-            }
-
             var customerServiceModel = this.mapper.Map<CustomerServiceModel>(customer);
             var id = await this.customerService.SaveAsync(customerServiceModel);
             return this.Created("", new { Id = id });
@@ -95,14 +76,8 @@ namespace WebApiYard.Controllers
         /// <param name="customer"></param>
         /// <returns>updated customer</returns>
         [HttpPut("{id:Guid}")]
-        public async Task<ActionResult> PutAsync(Guid id, [FromBody] CustomerView customer)
+        public async Task<ActionResult> PutAsync(Guid id, [FromBody] CustomerValidation customer)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.ValidationProblem();
-            }
-
-            //customer.Id = id;
             var customerServiceModel = this.mapper.Map<CustomerServiceModel>(customer);
 
             if (await customerService.UpdateAsync(customerServiceModel))

@@ -22,9 +22,9 @@ namespace WebApiYard.Controllers
         /// OrderController constructor
         /// </summary>
         /// <param name="mapper"></param>
-        public OrderController(IMapper mapper)
+        public OrderController(IMapper mapper, IOrderService service)
         {
-            this.orderService = new OrderService();
+            this.orderService = service;
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 

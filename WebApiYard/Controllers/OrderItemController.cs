@@ -11,7 +11,7 @@ using WebApiYard.Services.Models;
 namespace WebApiYard.Controllers
 {
     [Route("api/order_items")]
-    [Produces("application/json")]
+    //[Produces("application/json")]
     [ApiController]
     public class OrderItemController : ControllerBase
     {
@@ -22,9 +22,9 @@ namespace WebApiYard.Controllers
         /// OrderItemController constructor
         /// </summary>
         /// <param name="mapper"></param>
-        public OrderItemController(IMapper mapper)
+        public OrderItemController(IMapper mapper, IOrderItemService service)
         {
-            this.orderItemService = new OrderItemService();
+            this.orderItemService = service;
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 

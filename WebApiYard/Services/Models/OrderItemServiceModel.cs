@@ -1,5 +1,6 @@
 ﻿using System;
 using WebApiYard.Common;
+using WebApiYard.Repositories.Models;
 using WebApiYard.Services.Interfaces;
 
 namespace WebApiYard.Services.Models
@@ -19,6 +20,17 @@ namespace WebApiYard.Services.Models
 
         public Guid ProductId { get; set; }
         public ProductServiceModel Product { get; set; }
+
+        public OrderItem UpdateProperties(OrderItem oldOrderItem)
+        {
+            oldOrderItem.Quantity = this.Quantity;
+            //oldOrderItem.PurchasePrice = this.Quantity * product.Price;
+            oldOrderItem.Color = (int)(Colors)Enum.Parse(typeof(Colors), this.Color);
+            oldOrderItem.OrderId = this.OrderId;
+            oldOrderItem.ProductId = this.ProductId;
+            oldOrderItem.UpdatedAt = DateTime.UtcNow;
+            return oldOrderItem;
+        }
     }
 
 }

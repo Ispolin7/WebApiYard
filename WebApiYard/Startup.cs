@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using AutoMapper;
-using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services;
+using WebApiYard.DAL;
+using WebApiYard.Repositories;
+using WebApiYard.Repositories.Models;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace WebApiYard
 {
@@ -32,23 +30,45 @@ namespace WebApiYard
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper();
+            services.AddHttpContextAccessor();
+            services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+
             services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
+            services.AddScoped<IProductService, ProductService>();
+
+            services.AddScoped<Repository<Customer>>();
+            services.AddScoped<Repository<Order>>();
+            services.AddScoped<Repository<OrderItem>>();
+            services.AddScoped<Repository<Product>>();
+
+            services.AddDbContext<ApiContext>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {          
+            app.UseExceptionHandler(a => a.Run(async context =>
+            {
+                var feature = context.Features.Get<IExceptionHandlerPathFeature>();
+                var exception = feature.Error;
+
+                var result = JsonConvert.SerializeObject(new
+                {
+                    exception.Message,
+                    exception.Source,
+                    exception.StackTrace
+                });
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(result);
+            }));
+
             app.UseMvc();          
 
-            app.UseGlobalExceptionHandler(x => {
-                x.ContentType = "application/json";           
-                x.Map<Exception>().ToStatusCode(StatusCodes.Status404NotFound)
-                    .WithBody((ex, context) => JsonConvert.SerializeObject(new
-                    {
-                        Error = ex.Message
-                    }));
-            });
+            
 
             
         }

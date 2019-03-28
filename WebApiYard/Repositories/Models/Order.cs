@@ -13,8 +13,9 @@ namespace WebApiYard.Repositories.Models
         public Address ShippingAddress { get; set; }
 
         public Guid CustomerId { get; set; }
+        public Customer Customer { get; set; }
 
-        public DateTime OrderDate { get; set; }
+        //public DateTime OrderDate { get; set; }
 
         public IEnumerable<OrderItem> Items { get; set; }
 

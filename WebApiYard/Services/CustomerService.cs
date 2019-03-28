@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using WebApiYard.Repositories;
 using WebApiYard.Services.Interfaces;
@@ -19,16 +18,11 @@ namespace WebApiYard.Services
         /// <summary>
         /// Initialization of all repositories
         /// </summary>
-        public CustomerService()
+        public CustomerService(Repository<Customer> repository)
         {
-            this.customerRepository = new Repository<Customer>();
+            this.customerRepository = repository;
             this.upMapper = new RepositoryToServiceMapper();
         }
-
-        //public CustomerService(Repository<Repositories.Models.Customer> repository)
-        //{
-        //    this.customerRepository = repository;
-        //}
 
         /// <summary>
         /// Get all customers from DB
@@ -36,9 +30,13 @@ namespace WebApiYard.Services
         /// <returns>Customer collection</returns>
         public async Task<IEnumerable<CustomerServiceModel>> AllAsync()
         {
-            var customers = await (this.customerRepository
-                .All())
-                .Including(c => c.Orders)
+            var customers = await this.customerRepository
+                .All()
+                .Include(c => c.Orders)
+                    .ThenInclude(o => o.Items)
+                        .ThenInclude(i => i.Product)
+                .Include(c => c.Orders)
+                    .ThenInclude(o => o.ShippingAddress)
                 .ToListAsync();
             return this.upMapper.MapCustomers(customers);
         }
@@ -52,8 +50,13 @@ namespace WebApiYard.Services
         {
             var customer = await customerRepository
                 .GetById(id)
-                .Including(c => c.Orders)
-                .FirstAsync();
+                //.Including(c => c.Orders)
+                .Include(c => c.Orders)
+                    .ThenInclude(o => o.Items)
+                        .ThenInclude(i => i.Product)
+                .Include(c => c.Orders)
+                    .ThenInclude(o => o.ShippingAddress)
+                .FirstOrDefaultAsync();
             return this.upMapper.MapCustomer(customer);
         }
 
@@ -80,12 +83,10 @@ namespace WebApiYard.Services
         /// <returns>result status</returns>
         public async Task<bool> UpdateAsync(CustomerServiceModel customer)
         {
-            var oldCustomer = await this.GetCustomerFromDBAsync(customer.Id);           
-            oldCustomer.FirstName = customer.FirstName;
-            oldCustomer.LastName = customer.LastName;
-            oldCustomer.Age = customer.Age;
-            oldCustomer.UpdatedAt = DateTime.Now;
-            return await customerRepository.UpdateAsync(oldCustomer);
+            var oldCustomer = await this.GetCustomerFromDBAsync(customer.Id);
+            var updatedCusromer = customer.UpdateProperties(oldCustomer);
+            // TODO 500
+            return await customerRepository.UpdateAsync(updatedCusromer);
         }
 
         /// <summary>

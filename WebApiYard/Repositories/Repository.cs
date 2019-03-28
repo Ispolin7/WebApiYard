@@ -14,9 +14,9 @@ namespace WebApiYard.Repositories
         protected readonly DbContext dbContext;
         protected readonly DbSet<T> dbSet;
 
-        public Repository()
+        public Repository(ApiContext context)
         {
-            dbContext = new ApiContext();
+            dbContext = context;
             dbSet = dbContext.Set<T>();
         }
 
@@ -26,7 +26,9 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public IQueryable<T> All()
         {
-            return dbSet.AsNoTracking();               
+            return dbSet
+                .AsNoTracking()
+                .Where(e => e.IsDelete != true);
         }
 
         /// <summary>
@@ -36,6 +38,7 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public IQueryable<T> GetById(Guid id)
         {
+            // TODO get deleted entity, 500
             return dbSet
                 .AsNoTracking()
                 .Where(e => e.Id == id)
@@ -75,7 +78,7 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public async Task<bool> UpdateAsync(T entity)
         {
-            entity.UpdatedAt = DateTime.Now;
+            //entity.UpdatedAt = DateTime.Now;
             dbSet.Update(entity);
             await dbContext.SaveChangesAsync();
             return true;

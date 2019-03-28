@@ -13,11 +13,11 @@ namespace WebApiYard.Controllers.ValidationModels
         public string Color { get; set; }
 
         [Required]
-        [OrderExistsDB]
+        //[OrderExistsDB]
         public Guid OrderId { get; set; }
 
         [Required]
-        [ProductExistsDB]
+        //[ProductExistsDB]
         public Guid ProductId { get; set; }
     }
 }

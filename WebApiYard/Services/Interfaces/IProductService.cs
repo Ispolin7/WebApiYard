@@ -6,7 +6,7 @@ using WebApiYard.Services.Models;
 
 namespace WebApiYard.Services.Interfaces
 {
-    interface IProductService : IEntityService<Models.ProductServiceModel>
+    public interface IProductService : IEntityService<ProductServiceModel>
     {
     }
 }

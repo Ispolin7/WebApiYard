@@ -18,9 +18,9 @@ namespace WebApiYard.Services
         /// <summary>
         /// Initialization of all repositories
         /// </summary>
-        public ProductService()
+        public ProductService(Repository<Product> products)
         {
-            this.productRepository = new Repository<Product>();
+            this.productRepository = products;
             this.upMapper = new RepositoryToServiceMapper();
         }
 
@@ -30,7 +30,9 @@ namespace WebApiYard.Services
         /// <returns>products collection</returns>
         public async Task<IEnumerable<ProductServiceModel>> AllAsync()
         {
-            var products = await this.productRepository.All().ToListAsync();
+            var products = await this.productRepository
+                .All()
+                .ToListAsync();
             return upMapper.MapProducts(products);
         }
 
@@ -41,7 +43,9 @@ namespace WebApiYard.Services
         /// <returns>Product or throw an exception</returns>
         public async Task<ProductServiceModel> GetAsync(Guid id)
         {
-            var product = await productRepository.GetById(id).FirstAsync();
+            var product = await productRepository
+                .GetById(id)
+                .FirstAsync();
             return upMapper.MapProduct(product);
         }
 
@@ -69,10 +73,8 @@ namespace WebApiYard.Services
         public async Task<bool> UpdateAsync(ProductServiceModel product)
         {
             var oldProduct = await this.GetProductFromDBAsync(product.Id);
-            oldProduct.Name = product.Name;
-            oldProduct.Description = product.Description;
-            oldProduct.Price = product.Price;
-            return await this.productRepository.UpdateAsync(oldProduct);
+            var updatedProduct = product.UpdateProperties(oldProduct);
+            return await this.productRepository.UpdateAsync(updatedProduct);
         }
 
         /// <summary>

@@ -19,9 +19,9 @@ namespace WebApiYard.Services
         /// <summary>
         /// Initialization of all repositories
         /// </summary>
-        public OrderService()
+        public OrderService(Repository<Order> orders)
         {
-            this.orderRepository = new Repository<Order>();
+            this.orderRepository = orders;
             this.upMapper = new RepositoryToServiceMapper();
         }
 
@@ -34,8 +34,11 @@ namespace WebApiYard.Services
         {
             var orders = await this.orderRepository.All()
                 .Where(o => o.IsDelete != true)
-                .Including(o => o.ShippingAddress)
-                //.Including(o => o.Items)
+                //.Including(o => o.ShippingAddress)
+                .Include(o => o.ShippingAddress)
+                .Include(o => o.Customer)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.Product)                        
                 .ToListAsync();
 
             return upMapper.MapOrders(orders);
@@ -51,13 +54,13 @@ namespace WebApiYard.Services
         {
             var order = await this.orderRepository
                 .GetById(id)
-                .Where(o => (o.IsDelete != true) && (o.Id == id))
-                .Including(o => o.ShippingAddress)
-                //.Including(o => o.Items)
-                .FirstAsync();
+                .Include(o => o.ShippingAddress)
+                .Include(o => o.Customer)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync();
 
-            return upMapper.MapOrder(order);
-            
+            return upMapper.MapOrder(order);            
         }
 
         /// <summary>
@@ -83,11 +86,9 @@ namespace WebApiYard.Services
         /// <returns>result status</returns>
         public async Task<bool> UpdateAsync(OrderServiceModel order)
         {
-            var oldOrder = await this.GetOrderFromDBAsync(order.Id);           
-            oldOrder.AddressId = order.AddressId;
-            oldOrder.CustomerId = order.CustomerId;
-            oldOrder.UpdatedAt = DateTime.UtcNow;
-            return await this.orderRepository.UpdateAsync(oldOrder);
+            var oldOrder = await this.GetOrderFromDBAsync(order.Id);
+            var updatedOrder = order.UpdateProperties(oldOrder);
+            return await this.orderRepository.UpdateAsync(updatedOrder);
         }
 
         /// <summary>
@@ -110,7 +111,7 @@ namespace WebApiYard.Services
         /// <returns>Order model or throw an exception</returns>
         public async Task<Order> GetOrderFromDBAsync(Guid id)
         {
-            var order = await orderRepository.GetById(id).FirstAsync();
+            var order = await orderRepository.GetById(id).FirstOrDefaultAsync();
             if (order == null || order.IsDelete == true)
             {
                 throw new ArgumentException("Order not found");
