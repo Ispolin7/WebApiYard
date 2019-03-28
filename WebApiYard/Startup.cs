@@ -50,7 +50,8 @@ namespace WebApiYard
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {          
+        {    
+           // Add global exception handler
             app.UseExceptionHandler(a => a.Run(async context =>
             {
                 var feature = context.Features.Get<IExceptionHandlerPathFeature>();
