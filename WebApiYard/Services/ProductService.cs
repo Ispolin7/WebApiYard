@@ -18,9 +18,9 @@ namespace WebApiYard.Services
         /// <summary>
         /// Initialization of all repositories
         /// </summary>
-        public ProductService(Repository<Product> products)
+        public ProductService(IRepository<Product> products)
         {
-            this.productRepository = products;
+            this.productRepository = products ?? throw new ArgumentNullException(nameof(products));
             this.upMapper = new RepositoryToServiceMapper();
         }
 

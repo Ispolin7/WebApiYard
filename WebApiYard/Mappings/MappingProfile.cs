@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using WebApiYard.Controllers.ValidationModels;
-using WebApiYard.Controllers.ViewModels;
 using WebApiYard.Services.Models;
 
 namespace WebApiYard.Mappings
@@ -9,10 +8,13 @@ namespace WebApiYard.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<CustomerValidation, CustomerServiceModel>()
-                .ForMember(d => d.FirstName, s => s.MapFrom(i => i.Name));
-            CreateMap<CustomerServiceModel, CustomerValidation>()
-                .ForMember(d => d.Name, s => s.MapFrom(i => i.FirstName));
+            //CreateMap<CustomerValidation, CustomerServiceModel>()
+            //    .ForMember(d => d.FirstName, s => s.MapFrom(i => i.Name));
+            //CreateMap<CustomerServiceModel, CustomerValidation>()
+            //    .ForMember(d => d.Name, s => s.MapFrom(i => i.FirstName));
+
+            CreateMap<CustomerCreate, CustomerServiceModel>();
+            CreateMap<CustomerUpdate, CustomerServiceModel>();
 
             CreateMap<OrderCreate, OrderServiceModel>();
             CreateMap<OrderUpdate, OrderServiceModel>();

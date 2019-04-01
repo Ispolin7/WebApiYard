@@ -20,10 +20,10 @@ namespace WebApiYard.Services
         /// <summary>
         /// Initialization of all repositories
         /// </summary>
-        public OrderItemService(Repository<OrderItem> repositoryOrderItem, Repository<Product> repositoryProduct)
+        public OrderItemService(IRepository<OrderItem> repositoryOrderItem, IRepository<Product> repositoryProduct)
         {
-            this.orderItemRepository = repositoryOrderItem;
-            this.productRepository = repositoryProduct;
+            this.orderItemRepository = repositoryOrderItem ?? throw new ArgumentNullException(nameof(repositoryOrderItem));
+            this.productRepository = repositoryProduct ?? throw new ArgumentNullException(nameof(repositoryProduct));
             this.upMapper = new RepositoryToServiceMapper();
         }
 

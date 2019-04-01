@@ -7,7 +7,7 @@ namespace WebApiYard.Controllers.ValidationModels
     public class OrderUpdate : OrderCreate
     {
         [Required]
-        //[OrderExistsDB]
+        [OrderExistsDB]
         public Guid Id { get; set; }
     }
 }

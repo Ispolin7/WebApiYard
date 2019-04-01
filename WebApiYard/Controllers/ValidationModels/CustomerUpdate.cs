@@ -4,10 +4,10 @@ using WebApiYard.Controllers.ValidationModels.CustomDataAnnotations;
 
 namespace WebApiYard.Controllers.ValidationModels
 {
-    public class CustomerUpdate
+    public class CustomerUpdate : CustomerCreate
     {
         [Required]
-        //[CustomerExistsDB]
+        [CustomerExistsDB]
         public Guid Id { get; set; }
     }
 }

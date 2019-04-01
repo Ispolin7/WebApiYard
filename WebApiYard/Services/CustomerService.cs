@@ -18,9 +18,9 @@ namespace WebApiYard.Services
         /// <summary>
         /// Initialization of all repositories
         /// </summary>
-        public CustomerService(Repository<Customer> repository)
+        public CustomerService(IRepository<Customer> repository)
         {
-            this.customerRepository = repository;
+            this.customerRepository = repository ?? throw new ArgumentNullException(nameof(repository));
             this.upMapper = new RepositoryToServiceMapper();
         }
 

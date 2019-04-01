@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WebApiYard.Controllers.ValidationModels;
-using WebApiYard.Services;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
 
@@ -24,7 +23,7 @@ namespace WebApiYard.Controllers
         /// <param name="mapper"></param>
         public OrderItemController(IMapper mapper, IOrderItemService service)
         {
-            this.orderItemService = service;
+            this.orderItemService = service ?? throw new ArgumentNullException(nameof(service));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -62,10 +61,10 @@ namespace WebApiYard.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] OrderItemCreate orderItem)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest();
-            }
+            //if (!this.ModelState.IsValid)
+            //{
+            //    return this.BadRequest();
+            //}
 
             var orderItemServiceModel = this.mapper.Map<OrderItemServiceModel>(orderItem);
             var id = await this.orderItemService.SaveAsync(orderItemServiceModel);
@@ -81,10 +80,10 @@ namespace WebApiYard.Controllers
         [HttpPut("{id:Guid}")]
         public async Task<ActionResult> PutAsync(Guid id, [FromBody] OrderItemUpdate orderItem)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.ValidationProblem();
-            }
+            //if (!this.ModelState.IsValid)
+            //{
+            //    return this.ValidationProblem();
+            //}
 
             var orderItemServiceModel = this.mapper.Map<OrderItemServiceModel>(orderItem);
 

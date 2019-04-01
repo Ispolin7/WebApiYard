@@ -10,19 +10,21 @@ namespace WebApiYard.DAL
         /// <summary>
         /// Constructor. Create db
         /// </summary>
-        public ApiContext()
-        {
-            Database.EnsureCreated();
-        }
-        
+        //public ApiContext()
+        //{
+        //    Database.EnsureCreated();
+        //}
+        public ApiContext(DbContextOptions<ApiContext> options) 
+            : base(options) { }
+
         /// <summary>
         /// Configure connection
         /// </summary>
         /// <param name="optionsBuilder"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connection = @"Server=(localdb)\mssqllocaldb;Database=WebApi;Trusted_Connection=True;ConnectRetryCount=0";
-            optionsBuilder.UseSqlServer(connection);
+            //var connection = @"Server=(localdb)\mssqllocaldb;Database=WebApi;Trusted_Connection=True;ConnectRetryCount=0";
+            //optionsBuilder.UseSqlServer(connection);
         }
 
         /// <summary>

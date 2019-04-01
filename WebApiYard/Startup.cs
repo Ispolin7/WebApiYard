@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AutoMapper;
@@ -11,9 +9,10 @@ using WebApiYard.Services.Interfaces;
 using WebApiYard.Services;
 using WebApiYard.DAL;
 using WebApiYard.Repositories;
-using WebApiYard.Repositories.Models;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using WebApiYard.Controllers.Filters;
 
 namespace WebApiYard
 {
@@ -30,22 +29,29 @@ namespace WebApiYard
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper();
-            services.AddHttpContextAccessor();
-            services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 
+            //add accessors for validation models
+            //services.AddHttpContextAccessor();
+            //services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+
+            // add services
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IOrderItemService, OrderItemService>();
             services.AddScoped<IProductService, ProductService>();
 
-            services.AddScoped<Repository<Customer>>();
-            services.AddScoped<Repository<Order>>();
-            services.AddScoped<Repository<OrderItem>>();
-            services.AddScoped<Repository<Product>>();
+            // add repositories
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-            services.AddDbContext<ApiContext>();
+            //// add DB Context           
+            services.AddDbContext<ApiContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(ValidateModelStateAttribute));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,9 +70,11 @@ namespace WebApiYard
                     exception.StackTrace
                 });
                 context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(result);
             }));
 
+            // add MVC
             app.UseMvc();          
 
             

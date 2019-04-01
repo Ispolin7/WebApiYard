@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using WebApiYard.Repositories;
 using WebApiYard.Repositories.Models;
 
@@ -7,17 +8,17 @@ namespace WebApiYard.Controllers.ValidationModels.CustomDataAnnotations
 {
     public class OrderItemExistDBAttribute : ValidationAttribute
     {
-        public Repository<OrderItem> Repository { get; set; }
+        //public IRepository<OrderItem> Repository { get; set; }
 
-        public OrderItemExistDBAttribute(Repository<OrderItem> itemRepository)
-        {
-            Repository = itemRepository;
-        }
+        //public OrderItemExistDBAttribute(IRepository<OrderItem> itemRepository)
+        //{
+        //    Repository = itemRepository;
+        //}
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            //var repository = new Repository<OrderItem>();
-            if (Repository.GetById((Guid)value) == null)
+            var itemRepository = (IRepository<OrderItem>)validationContext.GetService(typeof(IRepository<OrderItem>));
+            if (itemRepository.GetById((Guid)value).FirstOrDefault() == null)
             {
                 return new ValidationResult("Order Item not found");
             }

@@ -62,7 +62,7 @@ namespace WebApiYard.Controllers
         /// <param name="customer"></param>
         /// <returns>new customer id</returns>
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] CustomerValidation customer)
+        public async Task<ActionResult> PostAsync([FromBody] CustomerCreate customer)
         {
             var customerServiceModel = this.mapper.Map<CustomerServiceModel>(customer);
             var id = await this.customerService.SaveAsync(customerServiceModel);
@@ -76,7 +76,7 @@ namespace WebApiYard.Controllers
         /// <param name="customer"></param>
         /// <returns>updated customer</returns>
         [HttpPut("{id:Guid}")]
-        public async Task<ActionResult> PutAsync(Guid id, [FromBody] CustomerValidation customer)
+        public async Task<ActionResult> PutAsync(Guid id, [FromBody] CustomerUpdate customer)
         {
             var customerServiceModel = this.mapper.Map<CustomerServiceModel>(customer);
 

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WebApiYard.Controllers.ValidationModels;
-using WebApiYard.Services;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
 
@@ -24,7 +23,6 @@ namespace WebApiYard.Controllers
         /// <param name="mapper"></param>
         public ProductController(IMapper mapper, IProductService service)
         {
-            //this.productService = new ProductService();
             this.productService = service ?? throw new ArgumentNullException(nameof(service));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
@@ -62,11 +60,6 @@ namespace WebApiYard.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] ProductCreate product)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest();
-            }
-
             var productServiceModel = this.mapper.Map<ProductServiceModel>(product);
             var id = await this.productService.SaveAsync(productServiceModel);
             return this.Created("", new { Id = id });
@@ -81,11 +74,6 @@ namespace WebApiYard.Controllers
         [HttpPut("{id:Guid}")]
         public async Task<ActionResult> PutAsync(Guid id, [FromBody] ProductUpdate product)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.ValidationProblem();
-            }
-
             var productServiceModel = this.mapper.Map<ProductServiceModel>(product);
 
             if (await this.productService.UpdateAsync(productServiceModel))

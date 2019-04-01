@@ -2,20 +2,21 @@
 using WebApiYard.Repositories;
 using WebApiYard.Repositories.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace WebApiYard.Controllers.ValidationModels.CustomDataAnnotations
 {
     public class AddressExistsDBAttribute : ValidationAttribute
     {
-        public Repository<Address> Address { get; set; }
-        public AddressExistsDBAttribute(Repository<Address> addresses)
-        {
-            Address = addresses;
-        }
+        //public IRepository<Address> Address { get; set; }
+        //public AddressExistsDBAttribute(IRepository<Address> addresses)
+        //{
+        //    Address = addresses;
+        //}
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            //var repository = new Repository<Address>();
-            if (Address.GetById((Guid)value) == null)
+            var addressRepository = (IRepository<Address>)validationContext.GetService(typeof(IRepository<Address>));
+            if (addressRepository.GetById((Guid)value).FirstOrDefault() == null)
             {
                 return new ValidationResult("Address not found");
             }

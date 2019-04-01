@@ -19,9 +19,9 @@ namespace WebApiYard.Services
         /// <summary>
         /// Initialization of all repositories
         /// </summary>
-        public OrderService(Repository<Order> orders)
+        public OrderService(IRepository<Order> orders)
         {
-            this.orderRepository = orders;
+            this.orderRepository = orders ?? throw new ArgumentNullException(nameof(orders));
             this.upMapper = new RepositoryToServiceMapper();
         }
 

@@ -9,14 +9,14 @@ namespace WebApiYard.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class, IEntity<Guid>
     {
-        public static Dictionary<Guid, T> _entities = new Dictionary<Guid, T>();
+        //public static Dictionary<Guid, T> _entities = new Dictionary<Guid, T>();
 
         protected readonly DbContext dbContext;
         protected readonly DbSet<T> dbSet;
 
         public Repository(ApiContext context)
         {
-            dbContext = context;
+            dbContext = context ?? throw new ArgumentNullException(nameof(context));
             dbSet = dbContext.Set<T>();
         }
 
@@ -64,7 +64,6 @@ namespace WebApiYard.Repositories
         /// <returns></returns>
         public async Task<bool> DeleteAsync(Guid id)
         {
-            // TODO RemoveAsync
             dbSet.Remove(dbSet.FirstOrDefault(e => e.Id == id));
             await dbContext.SaveChangesAsync();
             return true;

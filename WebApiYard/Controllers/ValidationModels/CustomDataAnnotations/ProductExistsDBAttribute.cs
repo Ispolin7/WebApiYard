@@ -2,22 +2,23 @@
 using WebApiYard.Repositories;
 using WebApiYard.Repositories.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace WebApiYard.Controllers.ValidationModels.CustomDataAnnotations
 {
     public class ProductExistsDBAttribute : ValidationAttribute
     {
-        public Repository<Product> Repository { get; set; }
+        //public IRepository<Product> Repository { get; set; }
 
-        public ProductExistsDBAttribute(Repository<Product> productRepository)
-        {
-            Repository = productRepository;
-        }
+        //public ProductExistsDBAttribute(IRepository<Product> productRepository)
+        //{
+        //    Repository = productRepository;
+        //}
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            //var repository = new Repository<Product>();
-            if (Repository.GetById((Guid)value) == null)
+            var productRepository = (IRepository<Product>)validationContext.GetService(typeof(IRepository<Product>));
+            if (productRepository.GetById((Guid)value).FirstOrDefault() == null)
             {
                 return new ValidationResult("Product not found");
             }

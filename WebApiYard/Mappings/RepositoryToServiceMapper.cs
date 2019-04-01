@@ -18,7 +18,7 @@ namespace WebApiYard.Mappings
         {
             if(customer == null)
             {
-                return new CustomerServiceModel();
+                throw new KeyNotFoundException("Customer not found");
             }
 
             return new CustomerServiceModel
