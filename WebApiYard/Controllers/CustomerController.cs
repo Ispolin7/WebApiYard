@@ -32,7 +32,7 @@ namespace WebApiYard.Controllers
         /// </summary>
         /// <returns>Customers collection</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerServiceModel>>> GetAllAsync()
+        public async Task<ActionResult/*<IEnumerable<CustomerServiceModel>>*/> GetAllAsync()
         {
             //var customers = await this.customerService.AllAsync();
             //var mapped = this.mapper.Map<IEnumerable<CustomerView>>(customers);
@@ -46,14 +46,15 @@ namespace WebApiYard.Controllers
         /// <param name="id"></param>
         /// <returns>Customer information</returns>
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<CustomerServiceModel>> GetByIdAsync(Guid id)
+        //public async Task<ActionResult<CustomerServiceModel>> GetByIdAsync(Guid id)
+        public async Task<ActionResult> GetByIdAsync(Guid id)
         {
             if (id == Guid.Empty)
             {
                 return NotFound();
             }
 
-            return await this.customerService.GetAsync(id);
+            return Ok(await this.customerService.GetAsync(id));
         }
 
         /// <summary>

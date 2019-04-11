@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using WebApiYard.Mappings;
 using WebApiYard.Repositories;
+using WebApiYard.Repositories.Models;
 using WebApiYard.Services.Interfaces;
 using WebApiYard.Services.Models;
-using WebApiYard.Mappings;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using WebApiYard.Repositories.Models;
 
 namespace WebApiYard.Services
 {
